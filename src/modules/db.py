@@ -84,3 +84,12 @@ class Database(object):
 		table_name = info_form[0]
 		data_form = self.getAllDataTableByNameForm(name_form)
 		return data_form
+
+	def saveRecordForm(self, name_form, description, name_table, path_image):
+		query = """insert into formularios
+		(nome_formulario, descricao, nome_tabela, caminho_imagem)
+		values(?, ?, ?, ?)"""
+		self.execute(query, (name_form, description, name_table, path_image))
+
+		self.db.commit()
+
