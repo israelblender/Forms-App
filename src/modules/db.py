@@ -5,22 +5,26 @@
 
 import sqlite3
 """Classes relacionada ao banco de dados"""
+
 class Database(object):
 	"Classe Singleton para conexao com banco de dados Sqlite3"
 	def __new__(self):
 		if not hasattr(self, "_instance"):
 			self._instance = super(Database, self).__new__(self)
 			try:
-				self.db = sqlite3.connect("..\Forms\src\databases\database.db")
+				self.db = sqlite3.connect("..\FormsApp\src\databases\database.db")
 				self.cursor = self.db.cursor()
 				self.execute = self.cursor.execute
 				self.fetchall = self.cursor.fetchall
 				self.fetchone = self.cursor.fetchone
 				print("\n\nBanco conectado com sucesso"+ str(id(self._instance)))
+				self.status = True
 			except: 
-				print("Não foi possível conectar Banco de dados")
+				self.status = False
 
 		return self._instance
+	def checkStatus(self):#Retorna o True caso o banco esteja conectado
+		return self.status
 
 	def __init__(self):
 		print("\nClasse Database inicializada com sucesso"+ str(id(self)))

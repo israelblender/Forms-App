@@ -3,14 +3,26 @@
 #Autor: Israel Gomes
 #Data: 26/08/2018
 from modules.db import Database
-from Tkinter import *
-import Tkinter, Tkconstants, tkFileDialog
+from tkMessageBox import showwarning
 from PIL import ImageTk, Image
 from ttk import Notebook
+from Tkinter import *
+import Tkinter, Tkconstants, tkFileDialog
+
+
+class DatabaseGui(Database):
+	"""Classe destinada a avisar com interface grafica caso ocorra erro na conexao"""
+	def __init__(self):
+		Database.__init__(self)
+		if not self.checkStatus():
+			message = u"Erro ao inicializar o FormApp\nNão foi possível se conectar ao Banco de dados"
+			print(message)
+			showwarning("Erro", message)
+		else: print("Banco conectado com sucesso")
 
 class Elements:
 	def __init__(self):
-		self.db = Database()
+		self.db = DatabaseGui()
 
 	def getAllElemments(self):
 

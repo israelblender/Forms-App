@@ -35,24 +35,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "modules/db.py",
-			"settings":
-			{
-				"buffer_size": 3085,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "main.py",
-			"settings":
-			{
-				"buffer_size": 7861,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -111,17 +93,16 @@
 	},
 	"expanded_folders":
 	[
-		"/F/Projetos/Outros/Forms",
-		"/F/Projetos/Outros/Forms/src",
-		"/F/Projetos/Outros/Forms/src/modules"
 	],
 	"file_history":
 	[
+		"/F/Projetos/Outros/Forms/src/modules/db.py",
+		"/F/Projetos/Outros/Forms/src/main.py",
+		"/F/Projetos/Outros/Forms/src/config_projeto_ambiente_sublime/modules/db.py",
+		"/F/Projetos/Outros/Forms/src/config_projeto_ambiente_sublime/main.py",
 		"/F/Projetos/Outros/FormsApp/src/main.py",
 		"/C/Users/Israel/Downloads/Drag-n-Drop.py",
-		"/F/Projetos/Outros/Forms/src/main.py",
 		"/F/Projetos/Outros/Forms/src/script_hacking/dnd.py",
-		"/F/Projetos/Outros/Forms/src/modules/db.py",
 		"/F/Projetos/Outros/Forms/src/.gitignore",
 		"/F/Projetos/Outros/Forms/src/script_hacking/drag.py",
 		"/F/Projetos/Outros/Forms/src/index.html",
@@ -175,73 +156,8 @@
 	"groups":
 	[
 		{
-			"selected": 1,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "modules/db.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3085,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"incomplete_sync": null,
-							"remote_loading": false,
-							"synced": false,
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "main.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7861,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5114,
-								5114
-							]
-						],
-						"settings":
-						{
-							"incomplete_sync": null,
-							"remote_loading": false,
-							"synced": false,
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 3384.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
 			]
 		}
 	],
