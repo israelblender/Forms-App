@@ -30,7 +30,11 @@ class Forms:
 		return all_forms
 
 class Interface():
+	index_position_current = 0
+	listElementThisForm = []
 	def __init__(self):
+		self.db = Database()
+
 		self.defineFontsVars()
 		self.configWindow("1.0.0")
 		self.defineVars()
@@ -39,14 +43,14 @@ class Interface():
 		self.configWidgetsGetForms()
 
 		self.setWidgets()
-		self.db = Database()
 
 	def defineVars(self):
-		self.frameOld = None
+		#self.frameOld = None
 		self.optionVar = IntVar()
 		self.nameFormVar = StringVar()
-		#self.descriptionFormVar = StringVar()
 		self.pathImageFormVar = StringVar()
+
+		#self.index_position_current = 0
 
 	def defineFontsVars(self):
 		self.font = ("Arial", 12)
@@ -57,14 +61,14 @@ class Interface():
 
 		self.optionVar.set(0)
 		self.pathImageFormVar.set("link da imagem")
-		self.frameOld = self.activeOptionCreateForm()
+		self.rb1.invoke()#Aciona o RadioButton CreateForm para renderizar os elementos na frameCreateForm
 
 	def configWindow(self, version):
 		self.window = Tk()
 		self.window.title("Forms App {}".format(version))
 		self.window.geometry("800x500+150+100")
 
-		title = "Crie seu App e formulários, realize estatísticas, \nedite e estude seus dados com o Form App"
+		title = "Crie seu App, formulários, realize estatísticas, \nedite e estude seus dados com o FormApp"
 		Label(self.window, font=self.fontMax, background="#2F4F4F", foreground="#6B8E23", text=title, padx=10, pady=10)\
 		.pack(side=TOP, fill="x", ipady=15)
 		self.frameBody = Frame(self.window)
@@ -74,12 +78,12 @@ class Interface():
 		frameOptions = Frame(self.frameBody)
 		frameOptions.pack(side=LEFT)
 
-		rb1 = Radiobutton(frameOptions, font=self.font, text="Criar App", variable=self.optionVar,
+		self.rb1 = Radiobutton(frameOptions, font=self.font, text="Criar App", variable=self.optionVar,
 		value=0, indicatoron=0, width=15, height=2, command=self.actionOptions)
-		rb1.grid(row=1, column=0)
-		rb2 = Radiobutton(frameOptions, font=self.font, text="Todos", variable=self.optionVar,
+		self.rb1.grid(row=1, column=0)
+		self.rb2 = Radiobutton(frameOptions, font=self.font, text="Todos", variable=self.optionVar,
 		value=1, indicatoron=0, width=15, height=2, command=self.actionOptions)
-		rb2.grid(row=2, column=0)
+		self.rb2.grid(row=2, column=0)
 
 	def configWidgetsCreateForm(self):
 		self.frameCreateForm = Frame(self.frameBody)
@@ -92,6 +96,8 @@ class Interface():
 
 		self.framesNotebook.add(self.labelFrameInfoForm, text="Info App")
 		self.framesNotebook.add(self.labelFrameFieldForm, text="Formulário")
+
+		# -------------- labelFrameInfoForm -------------
 
 		title = "Crie seu App de forma rápida"
 		Label(self.labelFrameInfoForm, text=title, font=self.font)\
@@ -116,8 +122,49 @@ class Interface():
 		Button(self.labelFrameInfoForm, font=self.fontMin, text="Salvar", command=self.actionSaveApp)\
 		.grid(row=4, column=1, padx=20, pady=15)
 
-	def configWidgetsGetForms(self):
+		# -------------- labelFrameFieldForm -------------
+
+		title = "Crie seu formulário com toda praticidade do FormApp de forma rápida"
+		Label(self.labelFrameFieldForm, text=title, font=self.font)\
+		.pack(side=TOP)
+
+		frameBodyForm = Frame(self.labelFrameFieldForm, background="red")
+		frameBodyForm.pack(side=TOP)
+
+		frameMenuElementsForm = Frame(frameBodyForm)#Frame que contera todos os elementos existentes
+		frameMenuElementsForm.pack(side=LEFT)
+		frameRenderElementsForm = Frame(frameBodyForm)#Frame que contera todos os elementos escolhidos pelo usuario
+		frameRenderElementsForm.pack(side=LEFT)
+
+		class Action():
+			def __init__(self, id_element, type_element, multline):
+				self.id_element = id_element
+				self.type_element = type_element
+				self.multline = True if multline == '1' else False
+			def __call__(self):
+				Interface.actionAddElement(self.id_element, self.type_element, self.multline)
+
+		for element in self.db.getAllElemments(): #Mostra todos os elementos em forma de botoes para serem adicionados no formulário
+			action = Action(element[0], element[2], element[3])
+
+			Button(frameMenuElementsForm, width=15, height=2, text=element[1], \
+				command=action, repeatinterval=700).pack(side=TOP)
+	
+	@classmethod
+	def actionAddElement(cls, id_element, type_element, multline): #Adiciona elemento para formulário
+		print("ActionAddElement acionado", id_element, type_element, multline)
+		cls.addElementToList(id_element=id_element, index_position=cls.index_position_current)
+		cls.index_position_current += 1
+
+	@classmethod
+	def addElementToList(cls, id_element, index_position):#Adiciona elemento para a renderização
+		cls.listElementThisForm.append((id_element, index_position))
+
+
+
+	def configWidgetsGetForms(self): # Configura todos os widgets que pertencem ao frame que mostra todos os apps e forms
 		self.frameGetForms = Frame(self.frameBody, background="red")
+		
 
 	def actionChoiseImageForm(self):
 		global img
