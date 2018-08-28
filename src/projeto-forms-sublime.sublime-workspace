@@ -1,0 +1,338 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"frameBody",
+				"frameBodyMenuForm"
+			],
+			[
+				"label",
+				"labelFrameFieldForm"
+			],
+			[
+				"data",
+				"database"
+			],
+			[
+				"frame",
+				"frameCreateForm"
+			],
+			[
+				"font",
+				"fontMin"
+			],
+			[
+				"get",
+				"getAllElemments"
+			],
+			[
+				"Data",
+				"Database"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "modules/db.py",
+			"settings":
+			{
+				"buffer_size": 3085,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "main.py",
+			"settings":
+			{
+				"buffer_size": 7861,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"About"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 157.0,
+		"history":
+		[
+			"class action:\\ndef __call__:\\n print(\"chamado\")",
+			"class action:\\ndef __call__: print(\"chamado\")",
+			"class action:",
+			"class action: def __call__: print(\"chamado\")",
+			"clas actions: def __call__: print(\"chamado\")",
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"dir",
+			"import tkinter",
+			"import Tkinter as tk",
+			"Database",
+			"x",
+			"x = 4",
+			"def main ():"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/F/Projetos/Outros/Forms",
+		"/F/Projetos/Outros/Forms/src",
+		"/F/Projetos/Outros/Forms/src/modules"
+	],
+	"file_history":
+	[
+		"/F/Projetos/Outros/FormsApp/src/main.py",
+		"/C/Users/Israel/Downloads/Drag-n-Drop.py",
+		"/F/Projetos/Outros/Forms/src/main.py",
+		"/F/Projetos/Outros/Forms/src/script_hacking/dnd.py",
+		"/F/Projetos/Outros/Forms/src/modules/db.py",
+		"/F/Projetos/Outros/Forms/src/.gitignore",
+		"/F/Projetos/Outros/Forms/src/script_hacking/drag.py",
+		"/F/Projetos/Outros/Forms/src/index.html",
+		"/F/Projetos/Outros/Forms/src/index.php",
+		"/F/Projetos/Outros/Forms/src/modues/__init__.py",
+		"/F/Projetos/Outros projetos/Forms/src/main.py"
+	],
+	"find":
+	{
+		"height": 33.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"\t\t\t\n",
+			"frameCreateForm",
+			"activeOptionCreateForm",
+			"form app",
+			"frameCreateForm",
+			"frameBody",
+			"frameGetForms",
+			"frameCreateForm",
+			"grid",
+			"windowOld",
+			"getInfoFormById",
+			"getInfoFormByName"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"frameOld"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "modules/db.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3085,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "main.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7861,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5114,
+								5114
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3384.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 33.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.sftp":
+	{
+		"height": 0.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 168.0
+	},
+	"pinned_build_system": "Packages/Python/Python.sublime-build",
+	"project": "projeto-forms-sublime.sublime-project",
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 128.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
