@@ -17,7 +17,7 @@ class Database(object):
 				self.execute = self.cursor.execute
 				self.fetchall = self.cursor.fetchall
 				self.fetchone = self.cursor.fetchone
-				print("\n\nBanco conectado com sucesso"+ str(id(self._instance)))
+				#print("\n\nBanco conectado com sucesso"+ str(id(self._instance)))
 				self.status = True
 			except: 
 				self.status = False
@@ -27,7 +27,8 @@ class Database(object):
 		return self.status
 
 	def __init__(self):
-		print("\nClasse Database inicializada com sucesso"+ str(id(self)))
+		pass
+		#print("\nClasse Database inicializada com sucesso"+ str(id(self)))
 
 	def getAllElemments(self):
 		self.execute("select id, nome, tipo, multilinha, caminho_imagem, widget_tkinter from elementos")
@@ -39,11 +40,23 @@ class Database(object):
 		else: self.execute("select {} from apps".format(", ".join(columns)))
 		return self.fetchall()
 
-	def getInfoFormByName(self, name_form):
+	def getInfoFormByNameLike(self, name_form):
 		"""Retorna a informacao do formulario informando o nome do formulario"""
-		query = "select * from apps where nome_formulario = '{}'".format(name_form)
+		query = "select * from apps where like nome_formulario '%{}%'".format(name_form)
 		self.execute(query)
 		return self.fetchall()
+
+	def getInfoFormByNameTable(self, name_table):
+		"""Retorna a informacao do formulario informando o nome da tabela"""
+		query = "select * from apps where nome_tabela='{}'".format(name_form)
+		self.execute(query)
+		return self.fetchall()
+
+	def getIdOfLastRecordInApps(self):
+		"Obtem o ultimo app adicionado pelo usuario"
+		query = "select id from apps order by id desc limit 1"
+		self.execute(query)
+		return self.fetchall()[0]
 
 	def getInfoFormById(self, id_form):
 		"""Retorna a tabela que representa o id identificador de formulario informado"""
@@ -96,5 +109,21 @@ class Database(object):
 		values(?, ?, ?, ?)"""
 		self.execute(query, (name_form, description, name_table, path_image))
 
+		self.db.commit()
+
+	def saveFieldApp(self, id_form, id_element, title, text_help, index_position):
+		query = """insert into sequencia_elementos_formulario
+		(id_formulario, id_elemento, titulo, texto_ajuda, index_posicao)
+		values(?, ?, ?, ?, ?)
+		"""
+		self.execute(query, (id_form, id_element, title, text_help, index_position))
+		self.db.commit()
+
+	def saveTableApp(self, name_table, fields_types):
+		query = """
+			create table {}(id INTEGER PRIMARY KEY AUTOINCREMENT, {})
+		""".format(name_table, ",".join(fields_types))
+
+		self.execute(query)
 		self.db.commit()
 
