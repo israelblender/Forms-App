@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"widget",
+				"widget_tkinter"
+			],
+			[
+				"id",
+				"id_element"
+			],
+			[
 				"frameBody",
 				"frameBodyMenuForm"
 			],
@@ -35,6 +43,34 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "/F/Projetos/Outros/FormsApp/src/main.py",
+			"settings":
+			{
+				"buffer_size": 10237,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/F/Projetos/Outros/FormsApp/src/modules/utilities.py",
+			"settings":
+			{
+				"buffer_size": 963,
+				"encoding": "UTF-8",
+				"line_ending": "Windows",
+				"name": "# -*- coding: Latin-1 -*-"
+			}
+		},
+		{
+			"file": "/F/Projetos/Outros/FormsApp/src/modules/db.py",
+			"settings":
+			{
+				"buffer_size": 3204,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -93,9 +129,15 @@
 	},
 	"expanded_folders":
 	[
+		"/F/Projetos/Outros/FormsApp",
+		"/F/Projetos/Outros/FormsApp/src",
+		"/F/Projetos/Outros/FormsApp/src/modules"
 	],
 	"file_history":
 	[
+		"/F/Projetos/Outros/FormsApp/README.md",
+		"/F/Projetos/Outros/FormsApp/src/config_projeto_ambiente_sublime/projeto-forms-sublime.sublime-project",
+		"/F/Projetos/Outros/FormsApp/src/config_projeto_ambiente_sublime/projeto-forms-sublime.sublime-workspace",
 		"/F/Projetos/Outros/Forms/src/modules/db.py",
 		"/F/Projetos/Outros/Forms/src/main.py",
 		"/F/Projetos/Outros/Forms/src/config_projeto_ambiente_sublime/modules/db.py",
@@ -112,7 +154,7 @@
 	],
 	"find":
 	{
-		"height": 33.0
+		"height": 42.0
 	},
 	"find_in_files":
 	{
@@ -126,6 +168,21 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"abaFrameFieldForm",
+			"actionSaveApp",
+			"abaFrameFieldForm",
+			"labelFrameFieldForm",
+			"labelFrameInfoForm",
+			"labelFrameFieldForm",
+			"self.abaInfoForm",
+			"abaInfoForm",
+			"actionSaveApp",
+			"notebook",
+			"self.index_position_current",
+			"frameRenderElementsForm",
+			"cls",
+			"sticky",
+			"frameRenderElementsForm",
 			"\t\t\t\n",
 			"frameCreateForm",
 			"activeOptionCreateForm",
@@ -145,6 +202,9 @@
 		"regex": false,
 		"replace_history":
 		[
+			"abaFrameFieldForm",
+			"abaFrameInfoForm",
+			"self",
 			"frameOld"
 		],
 		"reverse": false,
@@ -156,8 +216,105 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "/F/Projetos/Outros/FormsApp/src/main.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10237,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8484,
+								8484
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 4990.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/F/Projetos/Outros/FormsApp/src/modules/utilities.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 963,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								842,
+								800
+							]
+						],
+						"settings":
+						{
+							"auto_name": "# -*- coding: Latin-1 -*-",
+							"incomplete_sync": null,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 216.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/F/Projetos/Outros/FormsApp/src/modules/db.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3204,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								998,
+								998
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 576.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -208,7 +365,7 @@
 	"project": "projeto-forms-sublime.sublime-project",
 	"replace":
 	{
-		"height": 62.0
+		"height": 80.0
 	},
 	"save_all_on_build": true,
 	"select_file":

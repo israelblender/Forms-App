@@ -30,37 +30,38 @@ class Database(object):
 		print("\nClasse Database inicializada com sucesso"+ str(id(self)))
 
 	def getAllElemments(self):
-		self.execute("select id, nome, tipo, multilinha from elementos")
+		self.execute("select id, nome, tipo, multilinha, caminho_imagem, widget_tkinter from elementos")
 		return self.fetchall()
 
-	def getAllInfoForms(self):
-		"""Retorna as informacoes dos formularios existentes no banco"""
-		self.execute("select * from formularios")
+	def getAllInfoForms(self, *columns):
+		"""Retorna as informacoes de todos os apps existentes no banco"""
+		if not columns: self.execute("select * from apps")
+		else: self.execute("select {} from apps".format(", ".join(columns)))
 		return self.fetchall()
 
 	def getInfoFormByName(self, name_form):
 		"""Retorna a informacao do formulario informando o nome do formulario"""
-		query = "select * from formularios where nome_formulario = '{}'".format(name_form)
+		query = "select * from apps where nome_formulario = '{}'".format(name_form)
 		self.execute(query)
 		return self.fetchall()
 
 	def getInfoFormById(self, id_form):
 		"""Retorna a tabela que representa o id identificador de formulario informado"""
-		query = "select * from formularios where id = {}".format(id_form)
+		query = "select * from apps where id = {}".format(id_form)
 		#print(query)
 		self.execute(query)
 		return self.fetchall()
 
-	def getRecordTableByNameTableAndId(self, name_table, id_record):
+	def getRecordAppByNameTableAndId(self, name_table, id_record):
 		"""Retorna o registro da tabela
-		 informado que é igual ao id informado"""
+		 informada com o id informado"""
 
 		query = "select * from {} where id_ = {}".format(name_table, id_record)
 		#print(query)
 		self.execute(query)
 		return self.fetchall()
 
-	def getAllDataFormByNameTable(self, name_table):
+	def getAllDataAppByNameTable(self, name_table):
 		"""Retorna todos os registros da tabela informando
 		o nome da tabela"""
 
@@ -69,28 +70,28 @@ class Database(object):
 		self.execute(query)
 		return self.fetchall()
 
-	def getAllDataFormByNameForm(self, name_form):
+	def getAllDataAppByNameApp(self, name_app):
 		"""Retorna informacoes do formulario informando
 		o nome identificador do formulario"""
 
 		# Retorna id, nome_formulario, descricao, nome_tabela
-		info_form = self.getFormByName(name_form)
+		info_form = self.getFormByName(name_app)
 		table_name = info_form[3]
 		data_form = self.getAllDataTableByNameForm(name_form)
 		return data_form
 
-	def getAllDataFormByIdForm(self, id_form):
+	def getAllDataFormByIdApp(self, id_app):
 		"""Retorna informacoes do formulario informando
 		o id identificador do formulario"""
 
 		# Retorna id, nome_formulario, descricao, nome_tabela
-		info_form = self.getFormByName(name_form)
+		info_form = self.getFormById(name_form)
 		table_name = info_form[0]
 		data_form = self.getAllDataTableByNameForm(name_form)
 		return data_form
 
-	def saveRecordForm(self, name_form, description, name_table, path_image):
-		query = """insert into formularios
+	def saveRecordApp(self, name_form, description, name_table, path_image):
+		query = """insert into apps
 		(nome_formulario, descricao, nome_tabela, caminho_imagem)
 		values(?, ?, ?, ?)"""
 		self.execute(query, (name_form, description, name_table, path_image))
