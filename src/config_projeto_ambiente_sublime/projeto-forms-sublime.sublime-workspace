@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"getAllForms",
+				"getAllInfoForms"
+			],
+			[
+				"framMenue",
+				"frameMenuElementsFormTop"
+			],
+			[
 				"widget",
 				"widget_tkinter"
 			],
@@ -47,7 +55,7 @@
 			"file": "/F/Projetos/Outros/FormsApp/src/main.py",
 			"settings":
 			{
-				"buffer_size": 10237,
+				"buffer_size": 14948,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -56,17 +64,25 @@
 			"file": "/F/Projetos/Outros/FormsApp/src/modules/utilities.py",
 			"settings":
 			{
-				"buffer_size": 963,
+				"buffer_size": 1258,
 				"encoding": "UTF-8",
-				"line_ending": "Windows",
-				"name": "# -*- coding: Latin-1 -*-"
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/F/Projetos/Outros/FormsApp/src/modules/report.py",
+			"settings":
+			{
+				"buffer_size": 983,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
 			}
 		},
 		{
 			"file": "/F/Projetos/Outros/FormsApp/src/modules/db.py",
 			"settings":
 			{
-				"buffer_size": 3204,
+				"buffer_size": 4431,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -135,6 +151,11 @@
 	],
 	"file_history":
 	[
+		"/F/Projetos/Outros/FormsApp/src/modules/validate.py",
+		"/F/Projetos/Outros/FormsApp/src/modules/report.py",
+		"/C/Users/Israel/AppData/Roaming/Sublime Text 3/Packages/Git/Git.sublime-settings",
+		"/C/Users/Israel/AppData/Roaming/Sublime Text 3/Packages/User/Git.sublime-settings",
+		"/F/Projetos/Outros/FormsApp/src/modules/utilities.py",
 		"/F/Projetos/Outros/FormsApp/README.md",
 		"/F/Projetos/Outros/FormsApp/src/config_projeto_ambiente_sublime/projeto-forms-sublime.sublime-project",
 		"/F/Projetos/Outros/FormsApp/src/config_projeto_ambiente_sublime/projeto-forms-sublime.sublime-workspace",
@@ -154,7 +175,7 @@
 	],
 	"find":
 	{
-		"height": 42.0
+		"height": 43.0
 	},
 	"find_in_files":
 	{
@@ -168,6 +189,86 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"checkInfoCompletedApp",
+			"insercao",
+			"pathImageFormVar",
+			"actionNextTabFrameFieldForm",
+			"imageWidget",
+			"savePhoto",
+			"ErrorReport",
+			"db.log",
+			"sys",
+			"print",
+			"showwarning",
+			"ErrorReport",
+			"getError",
+			"showwarning",
+			"conectar ao ",
+			"showAndSaveError",
+			"Interface",
+			"imagesFormApp",
+			"menuSideFieldForm",
+			"menuSiteFieldForm",
+			"formapp",
+			"forms app",
+			"form app",
+			"forms app",
+			"formsapp",
+			"formapp",
+			"form app",
+			"forms app",
+			"menuSiteFieldForm",
+			"createMenuSideForFieldForm",
+			"actionNextTableFrameFieldForm",
+			"\t\t\n",
+			"saveApp",
+			"formatNameTable",
+			"saveFieldsForm",
+			"listElementThisForm",
+			"idTemporaryElement",
+			"1",
+			"listElementThisForm",
+			"generateMenuSideForFieldForm",
+			"menuSide",
+			"listElementThisForm",
+			"idTemporaryElement",
+			"actionSaveApp",
+			"saveApp",
+			"idTemporaryELement",
+			"listElementThisForm",
+			"gray",
+			"self.infoAppFrame",
+			"index_position_current",
+			"frameRenderElementsForm",
+			"index_position_current",
+			"src",
+			"frameGetApps",
+			"frameBody",
+			"activeOptionGetApps",
+			"activeOptionCreateForm",
+			"menuOptionsFunctions",
+			"frameGetApps",
+			"configWidgetsCreateForm",
+			"notebook",
+			", sticky=W+E+N+S",
+			"notebook",
+			"configWidgetsGetApps",
+			"getAllDataTableByNameForm",
+			"getFormByName",
+			"getFormById",
+			"formularios",
+			"configWidgetsGetApps",
+			"frameInfoApp",
+			"GetForms",
+			"Tab",
+			"Aba",
+			"info App",
+			"infoApp",
+			"frameGetForms",
+			"abaFrameFieldForm",
+			"frameCreateForm",
+			"sticky",
+			"framesNotebook",
 			"abaFrameFieldForm",
 			"actionSaveApp",
 			"abaFrameFieldForm",
@@ -202,6 +303,14 @@
 		"regex": false,
 		"replace_history":
 		[
+			"insertion",
+			"imagesFormsApp",
+			"idTemporaryElement",
+			"apps",
+			"GetApps",
+			"Tab",
+			"tab",
+			"Tab",
 			"abaFrameFieldForm",
 			"abaFrameInfoForm",
 			"self",
@@ -225,15 +334,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10237,
+						"buffer_size": 14948,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								8484,
-								8484
+								7108,
+								7108
 							]
 						],
 						"settings":
@@ -245,7 +354,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4990.0,
+						"translation.y": 3871.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -257,27 +366,28 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 963,
+						"buffer_size": 1258,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								842,
-								800
+								994,
+								994
 							]
 						],
 						"settings":
 						{
-							"auto_name": "# -*- coding: Latin-1 -*-",
 							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
 							"syntax": "Packages/Python/Python.sublime-syntax",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 216.0,
+						"translation.y": 450.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -285,19 +395,50 @@
 				},
 				{
 					"buffer": 2,
-					"file": "/F/Projetos/Outros/FormsApp/src/modules/db.py",
+					"file": "/F/Projetos/Outros/FormsApp/src/modules/report.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3204,
+						"buffer_size": 983,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								998,
-								998
+								54,
+								65
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Python/Python.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 225.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/F/Projetos/Outros/FormsApp/src/modules/db.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4431,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								83,
+								83
 							]
 						],
 						"settings":
@@ -309,10 +450,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 576.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
@@ -320,7 +461,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 33.0
+		"height": 34.0
 	},
 	"input":
 	{
@@ -365,7 +506,7 @@
 	"project": "projeto-forms-sublime.sublime-project",
 	"replace":
 	{
-		"height": 80.0
+		"height": 82.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -403,7 +544,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 128.0,
+	"side_bar_width": 174.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
