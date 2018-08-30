@@ -4,6 +4,8 @@
 #Data: 26/08/2018
 
 import sqlite3
+#from modules.report import ErrorReport
+import os
 """Classes relacionada ao banco de dados"""
 
 class Database(object):
@@ -12,19 +14,25 @@ class Database(object):
 		if not hasattr(self, "_instance"):
 			self._instance = super(Database, self).__new__(self)
 			try:
-				self.db = sqlite3.connect("..\FormsApp\src\databases\database.db")
+				print ("PASTA ATUAL DB: " +os.getcwd())
+				#1/0
+				self.db = sqlite3.connect("databases/database.db")
 				self.cursor = self.db.cursor()
 				self.execute = self.cursor.execute
 				self.fetchall = self.cursor.fetchall
 				self.fetchone = self.cursor.fetchone
 				#print("\n\nBanco conectado com sucesso"+ str(id(self._instance)))
 				self.status = True
-			except: 
+			except Exception as error: 
+				self.error = error
 				self.status = False
 
 		return self._instance
 	def checkStatus(self):#Retorna o True caso o banco esteja conectado
 		return self.status
+
+	def getErrorDb(self):
+		return self.error.message
 
 	def __init__(self):
 		pass

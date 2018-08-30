@@ -1,7 +1,9 @@
 # -*- coding: Latin-1 -*-
 from PIL import Image, ImageTk
 from datetime import datetime
+from modules.report import ErrorReport
 
+errorReport = ErrorReport("error_utilities.log")
 
 def formatDate(date):
     "Formata data de 0000-00-00 para 00/00/0000 e vice-versa"
@@ -25,6 +27,10 @@ def renderPhoto(path, size):
     return photo
 
 def savePhoto(path_origin, path_destiny, size):
-    image = Image.open(path_origin)
-    image = image.resize(size, Image.ANTIALIAS)
-    image.save(path_destiny, "png")
+    "Salva a foto no novo caminho com o novo tamanho informado"
+    try:
+        image = Image.open(path_origin)
+        image = image.resize(size, Image.ANTIALIAS)
+        image.save(path_destiny, "png")
+    except Exception as error:
+        errorReport.showAndSaveError(error.message, "Erro direcionado a funcao savePhoto")
