@@ -62,6 +62,9 @@ class Interface():
 			self.configWidgetsGetApps()
 
 			self.setWidgets()
+
+			############################ FUNCAO TEMPORARIA APENAS PARA DESENVOLVIMENTO
+			self.nextTabFrameFieldForm()
 		else:
 			self.errorReport.showAndSaveError(self.db.getErrorDb(), "Erro ao inicializar banco de dados")
 			
@@ -79,15 +82,14 @@ class Interface():
 		self.menuOptionsFunctions = [self.activeOptionCreateForm, self.activeOptionGetApps]
 		self.listElementThisForm = {}
 		self.idTemporaryElement = 0
-		self.menuSideRight = False
+		self.menuRightStateVar = False
 
 	def defineFontsVars(self):
-		Interface.font = self.font = ("Arial", 13)
-		Interface.fontMin = self.fontMin = ("Arial", 10)
-		Interface.fontMax = self.fontMax = ("Arial", 15)
+		self.font = ("Arial", 13)
+		self.fontMin = ("Arial", 10)
+		self.fontMax = ("Arial", 15)
 
 	def setWidgets(self):
-
 		self.optionVar.set(0)
 		self.pathImageFormVar.set("link da imagem")
 		self.rb1.invoke()#Aciona o RadioButton CreateForm para renderizar os elementos na frameCreateForm
@@ -100,17 +102,17 @@ class Interface():
 
 		title = "Crie seu App, formulários, realize estatísticas, \nedite e estude seus dados com o Forms App"
 		image = renderPhoto("images/imagesFormsApp/imageApp.png", (60, 60))
-		Label(self.window, font=self.fontMax, background="#2F4F4F", foreground="#00CED1", \
+		Label(self.window, font=("Arial Rounded MT Bold", 15), background="thistle", foreground="chocolate", \
 			text=title, padx=10, pady=10, image=image, compound=RIGHT)\
 		.pack(side=TOP, fill="x", ipady=5)
-		self.frameBody = Frame(self.window, background="#20B2AA")
+		self.frameBody = Frame(self.window, background="paleturquoise")
 		self.frameBody.pack(side=TOP, expand=True, fill=BOTH)
 
-		self.menuSideRight = Frame(self.frameBody, background="#20B2AA", width=150)
-		self.menuSideRight.pack(side=RIGHT, fill=Y)
+		self.menuRight = Frame(self.frameBody, background="paleturquoise", width=150)
+		self.menuRight.pack(side=RIGHT, fill=Y)
 		
 	def configWidgetsMenuOptions(self):
-		frameOptions = Frame(self.frameBody, background="#20B2AA")
+		frameOptions = Frame(self.frameBody, background="paleturquoise")
 		frameOptions.pack(side=LEFT, fill=Y, padx=5, pady=5)
 
 		self.rb1 = Radiobutton(frameOptions, font=self.font, text="Novo App", variable=self.optionVar,
@@ -130,8 +132,8 @@ class Interface():
 		self.tabFrameFieldForm = Frame(self.framesNotebook)
 
 
-		self.framesNotebook.add(self.tabFrameInfoForm, sticky=W+E+N+S, text="Info App", padding='0.1i')
-		self.framesNotebook.add(self.tabFrameFieldForm, sticky=W+E+N+S, text="Item", padding='0.1i')
+		self.framesNotebook.add(self.tabFrameInfoForm, compound=LEFT, image=renderPhoto("images\\imagesFormsApp\\app.png", (40, 40)), sticky=W+E+N+S, text="Info App", padding='0.1i')
+		self.framesNotebook.add(self.tabFrameFieldForm, compound=LEFT, image=renderPhoto("images\\imagesFormsApp\\document.png", (40, 40)), sticky=W+E+N+S, text="Item", padding='0.1i')
 		self.framesNotebook.hide(self.tabFrameFieldForm)
 
 		# -------------- tabFrameInfoForm -------------
@@ -149,10 +151,10 @@ class Interface():
 		self.textWidget = Text(self.tabFrameInfoForm, pady=10, font=self.fontMin, width=50, height=3)
 		self.textWidget.grid(row=2, column=1, sticky=W+E+N+S)
 
-		self.imageWidget = Label(self.tabFrameInfoForm, padx=10, pady=10, background="grey", anchor=N)
+		self.imageWidget = Label(self.tabFrameInfoForm, padx=10, pady=10, background="lightcyan", anchor=N)
 		self.imageWidget.grid(row=1, column=2, rowspan=2, sticky=W+E+N+S, padx=10, pady=10)
 
-		Label(self.tabFrameInfoForm, padx=10, pady=10, background="grey", font=self.fontMin, textvariable=self.pathImageFormVar)\
+		Label(self.tabFrameInfoForm, padx=10, pady=10, background="lightcyan", font=self.fontMin, textvariable=self.pathImageFormVar)\
 		.grid(row=3, column=1, sticky=W+E+N+S)
 		Button(self.tabFrameInfoForm, font=self.fontMin, text="Procurar Imagem", command=self.actionChoiseImageForm)\
 		.grid(row=3, column=2, padx=10, pady=10)
@@ -165,7 +167,7 @@ class Interface():
 		Label(self.tabFrameFieldForm, textvariable=self.titleFormVar, font=self.font)\
 		.pack(side=TOP)
 
-		frameBodyForm = Frame(self.tabFrameFieldForm, background="#5F9EA0")
+		frameBodyForm = Frame(self.tabFrameFieldForm, background="lightcyan")
 		frameBodyForm.pack(side=TOP, fill=BOTH, expand=True, padx=5)
 
 		frameMenuElementsForm = Frame(frameBodyForm)#Frame que contera todos os elementos existentes
@@ -180,10 +182,10 @@ class Interface():
 
 			Button(frameMenuElementsForm, width=15, height=2, \
 				text=element[1], command=function, repeatdelay=700, borderwidth=3, activebackground="lightseagreen", background="darkcyan", cursor="sb_right_arrow").pack(side=TOP)
-
+		
 		#Cria opcoes especificas no meu direito para FieldForm
 		self.createMenuSideForFieldForm()
-
+		
 	def checkInfoCompletedApp(self, a, b, c):#checa se todos os campos de informacoes do app foram preenchidas
 		if self.nameFormVar.get() and self.pathImageFormVar.get() <> "link da imagem":
 			self.buttonNext.config(state="active")
@@ -193,17 +195,19 @@ class Interface():
 			self.buttonNext.config(state="disabled")
 	
 	def actionAddElement(self, id_element, name_element, type_element, multline, widget_tkinter): #Adiciona elemento para renderizacao com evento de botao
-		infoAppFrame = Frame(self.frameRenderElementsForm, background="grey")
+		infoAppFrame = Frame(self.frameRenderElementsForm, background="powderblue")
 		infoAppFrame.pack(side=TOP, fill=X)
 		infoAppFrame.idTemporaryElement = self.idTemporaryElement
 		def removeElement():#Funcao que remove o frame da tela e deleta o item da lista de elementos adicionados do formulario
 			del self.listElementThisForm[infoAppFrame.idTemporaryElement]
 			infoAppFrame.destroy()
 
-		Button(infoAppFrame, text="X", command=removeElement, takefocus=False).pack(side=RIGHT, ipadx=4, padx=4)
+		Button(infoAppFrame, text="X", command=removeElement, font=("Arial", 6), takefocus=False)\
+		.pack(side=RIGHT, ipadx=2, padx=2)
 
 		nameElementVar = StringVar()
-		nameElement = Entry(infoAppFrame, width=18, justify=CENTER, relief=FLAT, textvariable=nameElementVar, font=self.font)
+		nameElement = Entry(infoAppFrame, width=18, justify=CENTER, relief=FLAT, \
+			textvariable=nameElementVar, font=("Agency FB", 14))
 		nameElement.pack(side=LEFT, padx=10, fill=X)
 		nameElementVar.set(name_element)
 		nameElement.focus_force()
@@ -340,14 +344,21 @@ class Interface():
 			self.errorReport.showAndSaveError(error.message, "Erro ocorreu durante salvamento da tabela")
 
 	def createMenuSideForFieldForm(self):
-		if not self.menuSideRight:
-			self.menuSideRightOptionsFrame = Frame(self.menuSideRight)
-			self.menuSideRightOptionsFrame.pack(side=TOP, padx=10, pady=10)
+		if not self.menuRightStateVar:
+			self.menuRight["background"] = "red"
+			self.menuRightCreateForm = Frame(self.menuRight)
+			self.menuRightCreateForm.pack(side=TOP, padx=10, pady=10)
 
-			self.buttonSaveApp = Button(self.menuSideRightOptionsFrame, command=self.saveAll, \
+			self.buttonSaveApp = Button(self.menuRightCreateForm, command=self.saveAll, \
 				font=self.font, text="Salvar")
-			self.buttonSaveApp.pack(ipadx=10)
-		self.menuSideRight = True
+			self.buttonSaveApp.pack(side=TOP, ipadx=10)
+		self.menuRightStateVar = True
+
+	def hideMenuFieldForm(self):
+		self.menuRightCreateForm.forget()
+
+	def showMenuFieldForm(self):
+		self.menuRightCreateForm.pack(side=TOP, padx=10, pady=10)
 
 	def nextTabFrameFieldForm(self):
 		self.activeDeactivateTabFrameFieldForm()
@@ -370,10 +381,12 @@ class Interface():
 
 	def activeOptionCreateForm(self):
 		self.frameCreateForm.pack(side=LEFT, expand=True, fill=BOTH)
+		self.showMenuFieldForm()
 		return self.frameCreateForm
 
 	def activeOptionGetApps(self):
 		self.frameGetApps.pack(side=LEFT, expand=True, fill=BOTH)
+		self.hideMenuFieldForm()
 		return self.frameGetApps
 
 
