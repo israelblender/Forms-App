@@ -3,8 +3,8 @@ from Tkinter import *
 def insert(index, string):
     e.after(100, lambda: e.insert(int(index), string))
 
-#Validar ano
-def validateYear(index, after, insertion, before):
+#Validar data
+def validateDate(index, after, insertion, before):
     #print index, after, insertion, before
     index = int(index)
     if index in (1, 4) and len(after)-len(before) > 0: insert(index+1, "/")
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     e = Entry(window, textvariable=entradaVar)
     e.place(x=50, y=50)
 
-    validateYearReg = window.register(validateYear)
+    validateDateReg = window.register(validateDate)
     validatePhoneReg = window.register(validatePhone)
     validadeHourReg = window.register(validadeHour)
 

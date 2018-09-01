@@ -1,12 +1,9 @@
 from tkMessageBox import showwarning
-import os
 
 class ErrorReport:
 	def __init__(self, file_name):
 		self.file_name = file_name
 		self.selfError = False
-
-		print ("PASTA ATUAL REPORT: " +os.getcwd())
 
 	def showAndSaveError(self, error_message, description_name):
 		self.saveErrorLog(error_message)

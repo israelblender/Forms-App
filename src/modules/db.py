@@ -5,7 +5,6 @@
 
 import sqlite3
 #from modules.report import ErrorReport
-import os
 """Classes relacionada ao banco de dados"""
 
 class Database(object):
@@ -14,7 +13,6 @@ class Database(object):
 		if not hasattr(self, "_instance"):
 			self._instance = super(Database, self).__new__(self)
 			try:
-				print ("PASTA ATUAL DB: " +os.getcwd())
 				#1/0
 				self.db = sqlite3.connect("databases/database.db")
 				self.cursor = self.db.cursor()

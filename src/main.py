@@ -4,6 +4,7 @@
 #Data: 26/08/2018
 from modules.db import Database
 from modules.utilities import renderPhoto, savePhoto
+from modules.validate import validateDate, validatePhone
 #from tkMessageBox import showwarning
 from ttk import Notebook
 from Tkinter import *
@@ -66,8 +67,7 @@ class Interface():
 			############################ FUNCAO TEMPORARIA APENAS PARA DESENVOLVIMENTO
 			self.nextTabFrameFieldForm()
 		else:
-			self.errorReport.showAndSaveError(self.db.getErrorDb(), "Erro ao inicializar banco de dados")
-			
+			self.errorReport.showAndSaveError(self.db.getErrorDb(), "Erro ao inicializar banco de dados")		
 
 	def defineVars(self):
 		self.frameOld = None
@@ -75,6 +75,9 @@ class Interface():
 		self.nameFormVar = StringVar()
 		self.pathImageFormVar = StringVar()
 		self.titleFormVar = StringVar()
+
+		self.validateDateReg = self.window.register(validateDate)
+		self.validatePhoneReg = self.window.register(validatePhone)
 
 		self.nameFormVar.trace("w", self.checkInfoCompletedApp)
 		self.pathImageFormVar.trace("w", self.checkInfoCompletedApp)
@@ -150,6 +153,7 @@ class Interface():
 		Label(self.tabFrameInfoForm, text="Descrição", font=self.fontMin).grid(row=2, column=0)
 		self.textWidget = Text(self.tabFrameInfoForm, pady=10, font=self.fontMin, width=50, height=3)
 		self.textWidget.grid(row=2, column=1, sticky=W+E+N+S)
+		self.descriptionFormVar = self.createVarByTextWidget(self.textWidget)
 
 		self.imageWidget = Label(self.tabFrameInfoForm, padx=10, pady=10, background="lightcyan", anchor=N)
 		self.imageWidget.grid(row=1, column=2, rowspan=2, sticky=W+E+N+S, padx=10, pady=10)
@@ -181,7 +185,9 @@ class Interface():
 			 self.actionAddElement(id_element, name_element, type_element, multline, widget_tkinter)
 
 			Button(frameMenuElementsForm, width=15, height=2, \
-				text=element[1], command=function, repeatdelay=700, borderwidth=3, activebackground="lightseagreen", background="darkcyan", cursor="sb_right_arrow").pack(side=TOP)
+				text=element[1], command=function, repeatdelay=700, \
+				borderwidth=3, activebackground="lightseagreen", \
+				background="darkcyan", cursor="sb_right_arrow").pack(side=TOP)
 		
 		#Cria opcoes especificas no meu direito para FieldForm
 		self.createMenuSideForFieldForm()
@@ -211,77 +217,62 @@ class Interface():
 		nameElement.pack(side=LEFT, padx=10, fill=X)
 		nameElementVar.set(name_element)
 		nameElement.focus_force()
+		nameElement.select_range(0, END)
 
 		self.viewElement(infoAppFrame, widget_tkinter)
 		
 		#Salva na lista o id do elemento,nome da variavel controladora e o tipo de dado que sera inserido no banco
-		self.listElementThisForm[self.idTemporaryElement] = (id_element, nameElementVar, type_element)
+		self.listElementThisForm[self.idTemporaryElement] = (id_element, nameElementVar, type_element, infoAppFrame)
 		self.idTemporaryElement += 1
 
 	def viewElement(self, infoAppFrame, widget_tkinter):
 		"Apenas renderiza os elementos na tela sem mais configuracoes"
+		
 		if widget_tkinter == "entry": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=40, font=self.font)
 		elif widget_tkinter == "text": inputElement = Text(infoAppFrame, takefocus=False, state="disabled", width=40, height=4, font=self.font)
+
 		elif widget_tkinter == "spinbox": inputElement = Spinbox(infoAppFrame, takefocus=False, state="disabled", width=7, font=self.font)
-		elif widget_tkinter == "entry-date": pass
-		elif widget_tkinter == "entry-phone": pass
+		elif widget_tkinter == "entry-date": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=10, font=self.font)
+		elif widget_tkinter == "entry-phone": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=15, font=self.font)
 
 		inputElement.pack(side=LEFT, padx=10, pady=10)
+
 		return inputElement
 
 	def renderElement(self, infoAppFrame, widget_tkinter):
 		"Renderiza os elementos na tela com configurações de variáveis"
+		inputElementVar = None
 		if widget_tkinter == "entry":
 			inputElementVar = StringVar()
 			inputElement = Entry(infoAppFrame, width=40, textvariable=inputElementVar, font=self.font)
+		
+		elif widget_tkinter == "entry-date":
+			inputElementVar = StringVar()
+			inputElement = Entry(infoAppFrame, width=10, textvariable=inputElementVar, font=self.font)
+			inputElement.config(validate="key", validatecommand=(self.validadeDateReg, '%i','%P', '%S', '%s'))
 
-		elif widget_tkinter == "text":
-			inputElement = Text(infoAppFrame, width=40, height=4, font=self.font)
-			def set(string):
-				inputElement.delete('0.0', END)
-				inputElement.insert("0.0", string)
-			inputElementVar = type("inputElementVar", (), \
-				{"get": lambda: inputElement.get("0.0", END), "set": set})
+		elif widget_tkinter == "entry-phone":
+			inputElementVar = StringVar()
+			inputElement = Entry(infoAppFrame, width=15, textvariable=inputElementVar, font=self.font)
+			inputElement.config(validate="key", validatecommand=(self.validadePhoneReg, '%i','%P', '%S', '%s'))
 
-		elif widget_tkinter == "spinbox":
+                elif widget_tkinter == "spinbox":
 			inputElementVar = StringVar()
 			inputElement = Spinbox(infoAppFrame, width=5, textvariable=inputElementVar, font=self.font)
 		
-		elif widget_tkinter == "entry-date": pass
-		elif widget_tkinter == "entry-phone": pass
-		
+		elif widget_tkinter == "text":
+			inputElement = Text(infoAppFrame, width=40, height=4, font=self.font)
+			inputElementVar = self.createVarByTextWidget(inputElement)
+
 		inputElement.pack(side=LEFT, padx=10, pady=10)
+
 		return (inputElement, inputElementVar)
 
-	def configWidgetsGetApps(self): # Configura todos os widgets que pertencem ao frame que mostra todos os apps e forms
-		self.frameGetApps = Frame(self.frameBody)
-
-		self.frameAbasGetApps = Notebook(self.frameGetApps)
-		self.frameAbasGetApps.pack(side=TOP, fill=BOTH)
-		
-
-		self.frameApp = Frame(self.frameAbasGetApps)
-		self.frameInfoApp = Frame(self.frameApp)
-		self.frameInfoApp.pack(side=TOP, fill=BOTH)
-		self.frameFieldsApp = Frame(self.frameApp)
-		self.frameFieldsApp.pack(side=TOP, fill=BOTH)
-
-		for idApp, nomeApp, pathImage in self.db.getAllInfoForms("id", "nome_formulario", "caminho_imagem"):
-			image = renderPhoto(pathImage, (35, 35))
-			self.frameAbasGetApps.add(self.frameApp, compound=LEFT, image=image, text=nomeApp, sticky=W+E+N+S)
-			break
-
-		
-
-	# def generateTabsApps(self):
-	# 	self.listTabsApps = []
-	# 	for app_info in self.db.getAllInfoForms("id", "nome_formulario"):
-	# 		self.listTabsApps.append(self.generateTab(  ))
-
-	# def activeTabApp(self, name_form, description, name_table, path_image):
-		
-	# 	self.frameInfoApp
-	# 	self.frameFieldsApp
+	def createVarByTextWidget(self, textWidget):
+		def funcSet(value):
+			textWidget.delete("0.0", END)
+			textWidget.insert("0.0", value)
+		return type("StringVar", (), {"set": staticmethod(funcSet), "get": staticmethod(lambda: textWidget.get("0.0", END))})
 
 	def actionChoiseImageForm(self):
 		path_origin = tkFileDialog.askopenfilename(initialdir = "/",title = "Selecione o Arquivo", filetypes = (("Arquivos jpeg", "*.jpg"), ("Arquivos png", "*.png"),("Todos arquivos", "*.*")))
@@ -305,11 +296,24 @@ class Interface():
 		#self.textWidget.insert("0.0", "Eventos e palestrar de tecnologia que estão perto de ocorrer no ano de 2018.")
 		self.nextTabFrameFieldForm()
 
+	def cleanInfoApp(self):
+		self.nameFormVar.set("")
+		self.pathImageFormVar.set("")
+		self.descriptionFormVar.set("")
+
+	def cleanFieldForm(self):
+		for element in self.listElementThisForm.values():
+			element[-1].destroy()
+
 	def saveAll(self):
 		nameTableFormated = self.formatNameTable(self.nameFormVar.get())+str(randint(1, 1000000))
-		appId = self.saveApp(nameTableFormated)
-		self.saveFieldsForm(appId)
-		self.saveTableForm(nameTableFormated)
+		appId = self.saveApp(nameTableFormated)#Salva as informacoes do App
+		self.saveFieldsForm(appId)#Salva as ordens dos elementos no formulario
+		self.saveTableForm(nameTableFormated)#Salva a tabela para inserir os futuros itens
+
+		self.cleanInfoApp()#Limpa todos os campos preenchimentos de Info App
+		self.cleanFieldForm()#Remove todos os Itens adicionados na criacao do formulario
+		self.activeDeactivateTabFrameFieldForm()#Torna a aba Item invisivel novamente
 
 	def saveApp(self, nameTableFormated):
 		"Salva o app no banco de dados"
@@ -323,14 +327,14 @@ class Interface():
 		return self.db.getIdOfLastRecordInApps()[0]
 
 	def saveFieldsForm(self, appId):
-		#(id_element, nameElementVar, type_element)
+		#(id_element, nameElementVar, type_element, inputElement)
 		index_posicao = 0
 		indexTemps = list(self.listElementThisForm)
 		indexTemps.sort()
 
 		for indexTemp in indexTemps:
-			id_element, nameElementVar, type_element = self.listElementThisForm.get(indexTemp)
-#salvar em saveFieldApp ---> id_formulario, id_elemento, titulo, texto_ajuda, index_posicao
+			id_element, nameElementVar, type_element, _ = self.listElementThisForm.get(indexTemp)
+			#salvar em saveFieldApp ---> id_formulario, id_elemento, titulo, texto_ajuda, index_posicao
 			
 			self.db.saveFieldApp(appId, id_element, str(nameElementVar.get()), "", index_posicao)
 			index_posicao += 1
@@ -354,18 +358,15 @@ class Interface():
 			self.buttonSaveApp.pack(side=TOP, ipadx=10)
 		self.menuRightStateVar = True
 
-	def hideMenuFieldForm(self):
-		self.menuRightCreateForm.forget()
+	def hideMenuFieldForm(self): self.menuRightCreateForm.forget()
 
-	def showMenuFieldForm(self):
-		self.menuRightCreateForm.pack(side=TOP, padx=10, pady=10)
+	def showMenuFieldForm(self): self.menuRightCreateForm.pack(side=TOP, padx=10, pady=10)
 
 	def nextTabFrameFieldForm(self):
 		self.activeDeactivateTabFrameFieldForm()
 		self.framesNotebook.select(self.tabFrameFieldForm)
 
-	def activeDeactivateTabFrameFieldForm(self):
-		self.framesNotebook.hide(self.tabFrameFieldForm)
+	def activeDeactivateTabFrameFieldForm(self): self.framesNotebook.hide(self.tabFrameFieldForm)
 
 	def formatNameColumn(self, name_field):
 		name_formated = "_".join(name_field.lower().split(" ")[0:2])
@@ -374,6 +375,32 @@ class Interface():
 	def formatNameTable(self, name_form):
 		name_formated = "_".join(name_form.lower().split(" ")[0:2])
 		return name_formated
+
+	def configWidgetsGetApps(self): # Configura todos os widgets que pertencem ao frame que mostra todos os apps e forms
+		self.frameGetApps = Frame(self.frameBody)
+
+		self.frameAbasGetApps = Notebook(self.frameGetApps)
+		self.frameAbasGetApps.pack(side=TOP, fill=BOTH)
+
+		self.frameApp = Frame(self.frameAbasGetApps)
+		self.frameInfoApp = Frame(self.frameApp)
+		self.frameInfoApp.pack(side=TOP, fill=BOTH)
+		self.frameFieldsApp = Frame(self.frameApp)
+		self.frameFieldsApp.pack(side=TOP, fill=BOTH)
+
+		for idApp, nomeApp, pathImage in self.db.getAllInfoForms("id", "nome_formulario", "caminho_imagem"):
+			image = renderPhoto(pathImage, (35, 35))
+			self.frameAbasGetApps.add(self.frameApp, compound=LEFT, image=image, text=nomeApp, sticky=W+E+N+S)
+			break
+	# def generateTabsApps(self):
+	# 	self.listTabsApps = []
+	# 	for app_info in self.db.getAllInfoForms("id", "nome_formulario"):
+	# 		self.listTabsApps.append(self.generateTab(  ))
+
+	# def activeTabApp(self, name_form, description, name_table, path_image):
+		
+	# 	self.frameInfoApp
+	# 	self.frameFieldsApp
 
 	def actionOptions(self):
 		if self.frameOld: self.frameOld.forget()
@@ -389,11 +416,8 @@ class Interface():
 		self.hideMenuFieldForm()
 		return self.frameGetApps
 
-
-
 if  __name__ == "__main__":
 	elem = Elements()
 	form = Forms()
 	inter = Interface()
-	if inter.db.checkStatus():
-		inter.window.mainloop()
+	if inter.db.checkStatus(): inter.window.mainloop()
