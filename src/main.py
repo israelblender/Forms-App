@@ -79,8 +79,8 @@ class Interface():
 		self.validateDateReg = self.window.register(validateDate)
 		self.validatePhoneReg = self.window.register(validatePhone)
 
-		self.nameFormVar.trace("w", self.checkInfoCompletedApp)
-		self.pathImageFormVar.trace("w", self.checkInfoCompletedApp)
+		self.nameFormVar.trace("w", self.checkInfoAppCompleted)
+		self.pathImageFormVar.trace("w", self.checkInfoAppCompleted)
 
 		self.menuOptionsFunctions = [self.activeOptionCreateForm, self.activeOptionGetApps]
 		self.listElementThisForm = {}
@@ -148,7 +148,7 @@ class Interface():
 		Label(self.tabFrameInfoForm, text="Nome", font=self.fontMin).grid(row=1, column=0)
 		inputName = Entry(self.tabFrameInfoForm, font=self.fontMin, textvariable=self.nameFormVar)
 		inputName.grid(row=1, column=1, pady=10, sticky=W+E+N+S)
-		#inputName.bind("<KeyPress>", self.checkInfoCompletedApp)
+		#inputName.bind("<KeyPress>", self.checkInfoAppCompleted)
 
 		Label(self.tabFrameInfoForm, text="Descrição", font=self.fontMin).grid(row=2, column=0)
 		self.textWidget = Text(self.tabFrameInfoForm, pady=10, font=self.fontMin, width=50, height=3)
@@ -192,13 +192,22 @@ class Interface():
 		#Cria opcoes especificas no meu direito para FieldForm
 		self.createMenuSideForFieldForm()
 		
-	def checkInfoCompletedApp(self, a, b, c):#checa se todos os campos de informacoes do app foram preenchidas
+	def checkInfoAppCompleted(self, a, b, c):#checa se todos os campos de informacoes do app foram preenchidas
 		if self.nameFormVar.get() and self.pathImageFormVar.get() <> "link da imagem":
 			self.buttonNext.config(state="active")
 			self.titleFormVar.set("Crie o formulário para seu App( "+self.nameFormVar.get()+" ) aqui!")
 		else:
 			self.activeDeactivateTabFrameFieldForm()
 			self.buttonNext.config(state="disabled")
+			self.buttonSaveApp.config(state="disabled")
+
+	def checkFormCompleted(self):
+		if self.listElementThisForm:
+			self.buttonSaveApp.config(state="active")
+		else:
+			self.buttonSaveApp.config(state="disabled")
+		
+
 	
 	def actionAddElement(self, id_element, name_element, type_element, multline, widget_tkinter): #Adiciona elemento para renderizacao com evento de botao
 		infoAppFrame = Frame(self.frameRenderElementsForm, background="powderblue")
@@ -207,6 +216,7 @@ class Interface():
 		def removeElement():#Funcao que remove o frame da tela e deleta o item da lista de elementos adicionados do formulario
 			del self.listElementThisForm[infoAppFrame.idTemporaryElement]
 			infoAppFrame.destroy()
+			self.checkFormCompleted()
 
 		Button(infoAppFrame, text="X", command=removeElement, font=("Arial", 6), takefocus=False)\
 		.pack(side=RIGHT, ipadx=2, padx=2)
@@ -224,6 +234,7 @@ class Interface():
 		#Salva na lista o id do elemento,nome da variavel controladora e o tipo de dado que sera inserido no banco
 		self.listElementThisForm[self.idTemporaryElement] = (id_element, nameElementVar, type_element, infoAppFrame)
 		self.idTemporaryElement += 1
+		self.checkFormCompleted()
 
 	def viewElement(self, infoAppFrame, widget_tkinter):
 		"Apenas renderiza os elementos na tela sem mais configuracoes"
@@ -354,7 +365,7 @@ class Interface():
 			self.menuRightCreateForm.pack(side=TOP, padx=10, pady=10)
 
 			self.buttonSaveApp = Button(self.menuRightCreateForm, command=self.saveAll, \
-				font=self.font, text="Salvar")
+				font=self.font, text="Salvar App")
 			self.buttonSaveApp.pack(side=TOP, ipadx=10)
 		self.menuRightStateVar = True
 
@@ -382,16 +393,17 @@ class Interface():
 		self.frameAbasGetApps = Notebook(self.frameGetApps)
 		self.frameAbasGetApps.pack(side=TOP, fill=BOTH)
 
-		self.frameApp = Frame(self.frameAbasGetApps)
-		self.frameInfoApp = Frame(self.frameApp)
-		self.frameInfoApp.pack(side=TOP, fill=BOTH)
-		self.frameFieldsApp = Frame(self.frameApp)
-		self.frameFieldsApp.pack(side=TOP, fill=BOTH)
+		frameApp = Frame(self.frameAbasGetApps)
+		frameInfoApp = Frame(frameApp)
+		frameInfoApp.pack(side=TOP, fill=BOTH)
+		frameFieldsApp = Frame(frameApp)
+		frameFieldsApp.pack(side=TOP, fill=BOTH)
 
 		for idApp, nomeApp, pathImage in self.db.getAllInfoForms("id", "nome_formulario", "caminho_imagem"):
 			image = renderPhoto(pathImage, (35, 35))
-			self.frameAbasGetApps.add(self.frameApp, compound=LEFT, image=image, text=nomeApp, sticky=W+E+N+S)
+			self.frameAbasGetApps.add(frameApp, compound=LEFT, image=image, text=nomeApp, sticky=W+E+N+S)
 			break
+
 	# def generateTabsApps(self):
 	# 	self.listTabsApps = []
 	# 	for app_info in self.db.getAllInfoForms("id", "nome_formulario"):

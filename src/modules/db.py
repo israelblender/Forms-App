@@ -9,22 +9,11 @@ import sqlite3
 
 class Database(object):
 	"Classe Singleton para conexao com banco de dados Sqlite3"
+	_instance_n = 0
 	def __new__(self):
 		if not hasattr(self, "_instance"):
 			self._instance = super(Database, self).__new__(self)
-			try:
-				#1/0
-				self.db = sqlite3.connect("databases/database.db")
-				self.cursor = self.db.cursor()
-				self.execute = self.cursor.execute
-				self.fetchall = self.cursor.fetchall
-				self.fetchone = self.cursor.fetchone
-				#print("\n\nBanco conectado com sucesso"+ str(id(self._instance)))
-				self.status = True
-			except Exception as error: 
-				self.error = error
-				self.status = False
-
+		self._instance_n += 1
 		return self._instance
 	def checkStatus(self):#Retorna o True caso o banco esteja conectado
 		return self.status
@@ -33,7 +22,25 @@ class Database(object):
 		return self.error.message
 
 	def __init__(self):
-		pass
+		if self._instance_n == 1:
+			try:
+				#1/0
+				self.db = sqlite3.connect("databases/database.db")
+				self.dbUser = sqlite3.connect("databases/databaseUser.db")
+				self.cursor = self.db.cursor()
+				self.execute = self.cursor.execute
+				self.fetchall = self.cursor.fetchall
+				self.fetchone = self.cursor.fetchone
+
+				self.cursorUser = self.dbUser.cursor()
+				self.executeUser = self.cursorUser.execute
+				self.fetchallUser = self.cursorUser.fetchall
+				self.fetchoneUser = self.cursorUser.fetchone
+				#print("\n\nBanco conectado com sucesso"+ str(id(self._instance)))
+				self.status = True
+			except Exception as error: 
+				self.error = error
+				self.status = False
 		#print("\nClasse Database inicializada com sucesso"+ str(id(self)))
 
 	def getAllElemments(self):
@@ -130,6 +137,6 @@ class Database(object):
 			create table {}(id INTEGER PRIMARY KEY AUTOINCREMENT, {})
 		""".format(name_table, ",".join(fields_types))
 
-		self.execute(query)
-		self.db.commit()
+		self.executeUser(query)
+		self.dbUser.commit()
 
