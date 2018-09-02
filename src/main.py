@@ -49,6 +49,98 @@ class Forms:
 
 		return all_forms
 
+class TabItem():
+	def __init__(self, master, nameFormVar, eventWhenAddElement=None, eventWhenDelElement=None):
+		self.master = master
+		self.eventWhenAddElement = eventWhenAddElement
+		self.eventWhenDelElement = eventWhenDelElement
+		self.nameFormVar = nameFormVar
+
+		self.db = DatabaseGui()
+		self.listElementThisForm = {}
+		self.idTemporaryElement = 0
+		self.titleFormVar = StringVar()
+		self.defineFontsVars()
+
+	def getElementsAdded(self):
+		return self.listElementThisForm
+	def defineFontsVars(self):
+		self.font = ("Arial", 13)
+		self.fontMin = ("Arial", 10)
+		self.fontMax = ("Arial", 15)
+	def renderAbaItem(self):
+		# -------------- tabFrameFieldForm -------------
+		
+		Label(self.master, textvariable=self.titleFormVar, font=self.font).pack(side=TOP)
+
+		frameBodyForm = Frame(self.master, background="lightcyan")
+		frameBodyForm.pack(side=TOP, fill=BOTH, expand=True, padx=5)
+
+		frameMenuElementsForm = Frame(frameBodyForm)#Frame que contera todos os elementos existentes
+		frameMenuElementsForm.pack(side=LEFT, fill=Y, ipadx=5)
+		self.frameRenderElementsForm = Frame(frameBodyForm)#Frame que contera todos os elementos escolhidos pelo usuario
+		self.frameRenderElementsForm.pack(side=LEFT, fill=Y, ipadx=5, ipady=5)
+
+		Label(frameMenuElementsForm, text="Elementos", font=self.font).pack(side=TOP)
+		for element in self.db.getAllElemments(): #Mostra todos os elementos em forma de botoes para serem adicionados no formulário
+			function = lambda id_element=element[0], name_element=element[1], type_element=element[2], multline=element[3], widget_tkinter=element[5]:\
+			 self.actionAddElement(id_element, name_element, type_element, multline, widget_tkinter)
+
+			Button(frameMenuElementsForm, width=15, height=2, \
+				text=element[1], command=function, repeatdelay=700, \
+				borderwidth=3, activebackground="lightseagreen", \
+				background="darkcyan", cursor="sb_right_arrow").pack(side=TOP)
+		#return frameRenderElementsForm #Aba para renderização dos elementos
+
+	def updateTitleFormVar(self):
+		self.titleFormVar.set("Crie o formulário para seu App( "+self.nameFormVar.get()+" ) aqui!")
+		
+	def actionAddElement(self, id_element, name_element, type_element, multline, widget_tkinter): #Adiciona elemento para renderizacao com evento de botao
+		infoAppFrame = Frame(self.frameRenderElementsForm, background="powderblue")
+		infoAppFrame.pack(side=TOP, fill=X)
+		infoAppFrame.idTemporaryElement = self.idTemporaryElement
+
+		def removeElement():#Funcao que remove o frame da tela e deleta o item da lista de elementos adicionados do formulario
+			del self.listElementThisForm[infoAppFrame.idTemporaryElement]
+			infoAppFrame.destroy()
+			self.eventWhenDelElement()
+
+		Button(infoAppFrame, text="X", command=removeElement, font=("Arial", 6), takefocus=False)\
+		.pack(side=RIGHT, ipadx=2, padx=2)
+
+		nameElementVar = StringVar()
+		nameElement = Entry(infoAppFrame, width=18, justify=CENTER, relief=FLAT, \
+			textvariable=nameElementVar, font=("Agency FB", 14))
+		nameElement.pack(side=LEFT, padx=10, fill=X)
+		nameElementVar.set(name_element)
+		nameElement.focus_force()
+		nameElement.select_range(0, END)
+
+		self.viewElement(infoAppFrame, widget_tkinter)
+		
+		#Salva na lista o id do elemento,nome da variavel controladora e o tipo de dado que sera inserido no banco
+		self.listElementThisForm[self.idTemporaryElement] = (id_element, nameElementVar, type_element, infoAppFrame)
+		self.idTemporaryElement += 1
+		self.eventWhenAddElement()
+
+	def viewElement(self, infoAppFrame, widget_tkinter):
+		"Apenas renderiza os elementos na tela sem mais configuracoes"
+		
+		if widget_tkinter == "entry": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=40, font=self.font)
+		elif widget_tkinter == "text": inputElement = Text(infoAppFrame, takefocus=False, state="disabled", width=40, height=4, font=self.font)
+
+		elif widget_tkinter == "spinbox": inputElement = Spinbox(infoAppFrame, takefocus=False, state="disabled", width=7, font=self.font)
+		elif widget_tkinter == "entry-date": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=10, font=self.font)
+		elif widget_tkinter == "entry-phone": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=15, font=self.font)
+
+		inputElement.pack(side=LEFT, padx=10, pady=10)
+
+		return inputElement
+
+	def cleanFieldForm(self):
+		for element in self.listElementThisForm.values():
+			element[-1].destroy()
+
 class Interface():
 	def __init__(self):
 		print ("PASTA ATUAL MAIN: " +os.getcwd())
@@ -74,7 +166,6 @@ class Interface():
 		self.optionVar = IntVar()
 		self.nameFormVar = StringVar()
 		self.pathImageFormVar = StringVar()
-		self.titleFormVar = StringVar()
 
 		self.validateDateReg = self.window.register(validateDate)
 		self.validatePhoneReg = self.window.register(validatePhone)
@@ -83,8 +174,8 @@ class Interface():
 		self.pathImageFormVar.trace("w", self.checkInfoAppCompleted)
 
 		self.menuOptionsFunctions = [self.activeOptionCreateForm, self.activeOptionGetApps]
-		self.listElementThisForm = {}
-		self.idTemporaryElement = 0
+		
+		
 		self.menuRightStateVar = False
 
 	def defineFontsVars(self):
@@ -139,8 +230,18 @@ class Interface():
 		self.framesNotebook.add(self.tabFrameFieldForm, compound=LEFT, image=renderPhoto("images\\imagesFormsApp\\document.png", (40, 40)), sticky=W+E+N+S, text="Item", padding='0.1i')
 		self.framesNotebook.hide(self.tabFrameFieldForm)
 
-		# -------------- tabFrameInfoForm -------------
+		self.renderAbaInfoApp()
 
+		self.tabItem = TabItem(master=self.tabFrameFieldForm, nameFormVar=self.nameFormVar, eventWhenAddElement=self.checkFormCompleted, eventWhenDelElement=self.checkFormCompleted)
+		self.tabItem.renderAbaItem()
+		self.listElementThisForm = self.tabItem.getElementsAdded()
+
+
+		#Cria opcoes especificas no meu direito para FieldForm
+		self.createMenuSideForFieldForm()
+		
+	def renderAbaInfoApp(self):
+		# -------------- tabFrameInfoForm -------------
 		title = "Crie seu App aqui"
 		Label(self.tabFrameInfoForm, text=title, font=self.font)\
 		.grid(row=0, column=0, columnspan=5)
@@ -166,36 +267,12 @@ class Interface():
 		self.buttonNext = Button(self.tabFrameInfoForm, state="disabled", font=self.fontMin, text="Prosseguir", command=self.actionNextTabFrameFieldForm)
 		self.buttonNext.grid(row=4, column=1, padx=20, pady=15)
 
-		# -------------- tabFrameFieldForm -------------
-
-		Label(self.tabFrameFieldForm, textvariable=self.titleFormVar, font=self.font)\
-		.pack(side=TOP)
-
-		frameBodyForm = Frame(self.tabFrameFieldForm, background="lightcyan")
-		frameBodyForm.pack(side=TOP, fill=BOTH, expand=True, padx=5)
-
-		frameMenuElementsForm = Frame(frameBodyForm)#Frame que contera todos os elementos existentes
-		frameMenuElementsForm.pack(side=LEFT, fill=Y, ipadx=5)
-		self.frameRenderElementsForm = Frame(frameBodyForm)#Frame que contera todos os elementos escolhidos pelo usuario
-		self.frameRenderElementsForm.pack(side=LEFT, fill=Y, ipadx=5, ipady=5)
-
-		Label(frameMenuElementsForm, text="Elementos", font=self.font).pack(side=TOP)
-		for element in self.db.getAllElemments(): #Mostra todos os elementos em forma de botoes para serem adicionados no formulário
-			function = lambda id_element=element[0], name_element=element[1], type_element=element[2], multline=element[3], widget_tkinter=element[5]:\
-			 self.actionAddElement(id_element, name_element, type_element, multline, widget_tkinter)
-
-			Button(frameMenuElementsForm, width=15, height=2, \
-				text=element[1], command=function, repeatdelay=700, \
-				borderwidth=3, activebackground="lightseagreen", \
-				background="darkcyan", cursor="sb_right_arrow").pack(side=TOP)
-		
-		#Cria opcoes especificas no meu direito para FieldForm
-		self.createMenuSideForFieldForm()
-		
+	
 	def checkInfoAppCompleted(self, a, b, c):#checa se todos os campos de informacoes do app foram preenchidas
 		if self.nameFormVar.get() and self.pathImageFormVar.get() <> "link da imagem":
 			self.buttonNext.config(state="active")
-			self.titleFormVar.set("Crie o formulário para seu App( "+self.nameFormVar.get()+" ) aqui!")
+			self.tabItem.updateTitleFormVar()
+
 		else:
 			self.activeDeactivateTabFrameFieldForm()
 			self.buttonNext.config(state="disabled")
@@ -206,49 +283,6 @@ class Interface():
 			self.buttonSaveApp.config(state="active")
 		else:
 			self.buttonSaveApp.config(state="disabled")
-		
-
-	
-	def actionAddElement(self, id_element, name_element, type_element, multline, widget_tkinter): #Adiciona elemento para renderizacao com evento de botao
-		infoAppFrame = Frame(self.frameRenderElementsForm, background="powderblue")
-		infoAppFrame.pack(side=TOP, fill=X)
-		infoAppFrame.idTemporaryElement = self.idTemporaryElement
-		def removeElement():#Funcao que remove o frame da tela e deleta o item da lista de elementos adicionados do formulario
-			del self.listElementThisForm[infoAppFrame.idTemporaryElement]
-			infoAppFrame.destroy()
-			self.checkFormCompleted()
-
-		Button(infoAppFrame, text="X", command=removeElement, font=("Arial", 6), takefocus=False)\
-		.pack(side=RIGHT, ipadx=2, padx=2)
-
-		nameElementVar = StringVar()
-		nameElement = Entry(infoAppFrame, width=18, justify=CENTER, relief=FLAT, \
-			textvariable=nameElementVar, font=("Agency FB", 14))
-		nameElement.pack(side=LEFT, padx=10, fill=X)
-		nameElementVar.set(name_element)
-		nameElement.focus_force()
-		nameElement.select_range(0, END)
-
-		self.viewElement(infoAppFrame, widget_tkinter)
-		
-		#Salva na lista o id do elemento,nome da variavel controladora e o tipo de dado que sera inserido no banco
-		self.listElementThisForm[self.idTemporaryElement] = (id_element, nameElementVar, type_element, infoAppFrame)
-		self.idTemporaryElement += 1
-		self.checkFormCompleted()
-
-	def viewElement(self, infoAppFrame, widget_tkinter):
-		"Apenas renderiza os elementos na tela sem mais configuracoes"
-		
-		if widget_tkinter == "entry": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=40, font=self.font)
-		elif widget_tkinter == "text": inputElement = Text(infoAppFrame, takefocus=False, state="disabled", width=40, height=4, font=self.font)
-
-		elif widget_tkinter == "spinbox": inputElement = Spinbox(infoAppFrame, takefocus=False, state="disabled", width=7, font=self.font)
-		elif widget_tkinter == "entry-date": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=10, font=self.font)
-		elif widget_tkinter == "entry-phone": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=15, font=self.font)
-
-		inputElement.pack(side=LEFT, padx=10, pady=10)
-
-		return inputElement
 
 	def renderElement(self, infoAppFrame, widget_tkinter):
 		"Renderiza os elementos na tela com configurações de variáveis"
@@ -310,11 +344,7 @@ class Interface():
 	def cleanInfoApp(self):
 		self.nameFormVar.set("")
 		self.pathImageFormVar.set("")
-		self.descriptionFormVar.set("")
-
-	def cleanFieldForm(self):
-		for element in self.listElementThisForm.values():
-			element[-1].destroy()
+		self.descriptionFormVar.set("")	
 
 	def saveAll(self):
 		nameTableFormated = self.formatNameTable(self.nameFormVar.get())+str(randint(1, 1000000))
@@ -323,7 +353,7 @@ class Interface():
 		self.saveTableForm(nameTableFormated)#Salva a tabela para inserir os futuros itens
 
 		self.cleanInfoApp()#Limpa todos os campos preenchimentos de Info App
-		self.cleanFieldForm()#Remove todos os Itens adicionados na criacao do formulario
+		self.tabItem.cleanFieldForm()#Remove todos os Itens adicionados na criacao do formulario
 		self.activeDeactivateTabFrameFieldForm()#Torna a aba Item invisivel novamente
 
 	def saveApp(self, nameTableFormated):
@@ -427,6 +457,9 @@ class Interface():
 		self.frameGetApps.pack(side=LEFT, expand=True, fill=BOTH)
 		self.hideMenuFieldForm()
 		return self.frameGetApps
+
+
+
 
 if  __name__ == "__main__":
 	elem = Elements()
