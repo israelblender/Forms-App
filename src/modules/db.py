@@ -124,19 +124,32 @@ class Database(object):
 
 		self.db.commit()
 
-	def saveFieldApp(self, id_form, id_element, title, text_help, index_position):
-		query = """insert into sequencia_elementos_formulario
-		(id_formulario, id_elemento, titulo, texto_ajuda, index_posicao)
-		values(?, ?, ?, ?, ?)
+	def saveFieldApp(self, id_form, id_element, title, text_help, index_position, params):
+		query = u"""insert into sequencia_elementos_formulario
+		(id_formulario, id_elemento, titulo, texto_ajuda, index_posicao, parametros)
+		values(?, ?, ?, ?, ?, ?)
 		"""
-		self.execute(query, (id_form, id_element, title, text_help, index_position))
+		self.execute(query, (id_form, id_element, title, text_help, index_position, ",".join(params)))
 		self.db.commit()
 
 	def saveTableApp(self, name_table, fields_types):
 		query = """
 			create table {}(id INTEGER PRIMARY KEY AUTOINCREMENT, {})
-		""".format(name_table, ",".join(fields_types))
+		""".format(name_table, ", ".join(fields_types))
 
 		self.executeUser(query)
 		self.dbUser.commit()
 
+class DatabaseGui(Database):
+	"""Classe destinada a avisar com interface grafica caso ocorra erro na conexao"""
+	def __new__(cls):
+		if not hasattr(cls, "_instance"):
+			cls._instance = super(DatabaseGui, cls).__new__(cls)
+			cls.instance_n = 0
+
+		cls.instance_n += 1
+		return cls._instance
+
+	def __init__(self):
+		if self.instance_n == 1:
+			Database.__init__(self)

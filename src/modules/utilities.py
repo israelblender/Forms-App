@@ -20,11 +20,17 @@ def renderPhoto(path, size):
         size recebe tupla (x, y) com valores do tamanho da imagem que será renderizada
     """
     #global photo
-    image = Image.open(path)
+    try:
+        image = Image.open(path)
+
+    except: 
+        image = Image.open("images\\testar\\Buzzfeed.png")
+        print "Arquivo nao foi encontrado"
     image = image.resize(size, Image.ANTIALIAS)
     photo = ImageTk.PhotoImage(image)
     list_images.append(photo)
     return photo
+
 
 def savePhoto(path_origin, path_destiny, size):
     "Salva a foto no novo caminho com o novo tamanho informado"
@@ -34,3 +40,9 @@ def savePhoto(path_origin, path_destiny, size):
         image.save(path_destiny, "png")
     except Exception as error:
         errorReport.showAndSaveError(error.message, "Erro direcionado a funcao savePhoto")
+
+def createVarByTextWidget(textWidget):
+    def funcSet(value):
+        textWidget.delete("0.0", "end")
+        textWidget.insert("0.0", value)
+    return type("StringVar", (), {"set": staticmethod(funcSet), "get": staticmethod(lambda: textWidget.get("0.0", "end"))})

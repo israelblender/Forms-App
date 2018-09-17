@@ -2,8 +2,9 @@
 
 #Autor: Israel Gomes
 #Data: 26/08/2018
-from modules.db import Database
-from modules.utilities import renderPhoto, savePhoto
+from modules.db import Database, DatabaseGui
+from modules.utilities import renderPhoto, savePhoto, createVarByTextWidget
+from modules.item import TabItem, ItemWidget
 from modules.validate import validateDate, validatePhone
 #from tkMessageBox import showwarning
 from ttk import Notebook
@@ -13,20 +14,6 @@ from random import randint
 
 import os
 from modules.report import ErrorReport
-
-class DatabaseGui(Database):
-	"""Classe destinada a avisar com interface grafica caso ocorra erro na conexao"""
-	def __new__(cls):
-		if not hasattr(cls, "_instance"):
-			cls._instance = super(DatabaseGui, cls).__new__(cls)
-			cls.instance_n = 0
-
-		cls.instance_n += 1
-		return cls._instance
-
-	def __init__(self):
-		if self.instance_n == 1:
-			Database.__init__(self)
 
 class Elements:
 	def __init__(self):
@@ -49,98 +36,6 @@ class Forms:
 
 		return all_forms
 
-class TabItem():
-	def __init__(self, master, nameFormVar, eventWhenAddElement=None, eventWhenDelElement=None):
-		self.master = master
-		self.eventWhenAddElement = eventWhenAddElement
-		self.eventWhenDelElement = eventWhenDelElement
-		self.nameFormVar = nameFormVar
-
-		self.db = DatabaseGui()
-		self.listElementThisForm = {}
-		self.idTemporaryElement = 0
-		self.titleFormVar = StringVar()
-		self.defineFontsVars()
-
-	def getElementsAdded(self):
-		return self.listElementThisForm
-	def defineFontsVars(self):
-		self.font = ("Arial", 13)
-		self.fontMin = ("Arial", 10)
-		self.fontMax = ("Arial", 15)
-	def renderAbaItem(self):
-		# -------------- tabFrameFieldForm -------------
-		
-		Label(self.master, textvariable=self.titleFormVar, font=self.font).pack(side=TOP)
-
-		frameBodyForm = Frame(self.master, background="lightcyan")
-		frameBodyForm.pack(side=TOP, fill=BOTH, expand=True, padx=5)
-
-		frameMenuElementsForm = Frame(frameBodyForm)#Frame que contera todos os elementos existentes
-		frameMenuElementsForm.pack(side=LEFT, fill=Y, ipadx=5)
-		self.frameRenderElementsForm = Frame(frameBodyForm)#Frame que contera todos os elementos escolhidos pelo usuario
-		self.frameRenderElementsForm.pack(side=LEFT, fill=Y, ipadx=5, ipady=5)
-
-		Label(frameMenuElementsForm, text="Elementos", font=self.font).pack(side=TOP)
-		for element in self.db.getAllElemments(): #Mostra todos os elementos em forma de botoes para serem adicionados no formulário
-			function = lambda id_element=element[0], name_element=element[1], type_element=element[2], multline=element[3], widget_tkinter=element[5]:\
-			 self.actionAddElement(id_element, name_element, type_element, multline, widget_tkinter)
-
-			Button(frameMenuElementsForm, width=15, height=2, \
-				text=element[1], command=function, repeatdelay=700, \
-				borderwidth=3, activebackground="lightseagreen", \
-				background="darkcyan", cursor="sb_right_arrow").pack(side=TOP)
-		#return frameRenderElementsForm #Aba para renderização dos elementos
-
-	def updateTitleFormVar(self):
-		self.titleFormVar.set("Crie o formulário para seu App( "+self.nameFormVar.get()+" ) aqui!")
-		
-	def actionAddElement(self, id_element, name_element, type_element, multline, widget_tkinter): #Adiciona elemento para renderizacao com evento de botao
-		infoAppFrame = Frame(self.frameRenderElementsForm, background="powderblue")
-		infoAppFrame.pack(side=TOP, fill=X)
-		infoAppFrame.idTemporaryElement = self.idTemporaryElement
-
-		def removeElement():#Funcao que remove o frame da tela e deleta o item da lista de elementos adicionados do formulario
-			del self.listElementThisForm[infoAppFrame.idTemporaryElement]
-			infoAppFrame.destroy()
-			self.eventWhenDelElement()
-
-		Button(infoAppFrame, text="X", command=removeElement, font=("Arial", 6), takefocus=False)\
-		.pack(side=RIGHT, ipadx=2, padx=2)
-
-		nameElementVar = StringVar()
-		nameElement = Entry(infoAppFrame, width=18, justify=CENTER, relief=FLAT, \
-			textvariable=nameElementVar, font=("Agency FB", 14))
-		nameElement.pack(side=LEFT, padx=10, fill=X)
-		nameElementVar.set(name_element)
-		nameElement.focus_force()
-		nameElement.select_range(0, END)
-
-		self.viewElement(infoAppFrame, widget_tkinter)
-		
-		#Salva na lista o id do elemento,nome da variavel controladora e o tipo de dado que sera inserido no banco
-		self.listElementThisForm[self.idTemporaryElement] = (id_element, nameElementVar, type_element, infoAppFrame)
-		self.idTemporaryElement += 1
-		self.eventWhenAddElement()
-
-	def viewElement(self, infoAppFrame, widget_tkinter):
-		"Apenas renderiza os elementos na tela sem mais configuracoes"
-		
-		if widget_tkinter == "entry": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=40, font=self.font)
-		elif widget_tkinter == "text": inputElement = Text(infoAppFrame, takefocus=False, state="disabled", width=40, height=4, font=self.font)
-
-		elif widget_tkinter == "spinbox": inputElement = Spinbox(infoAppFrame, takefocus=False, state="disabled", width=7, font=self.font)
-		elif widget_tkinter == "entry-date": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=10, font=self.font)
-		elif widget_tkinter == "entry-phone": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=15, font=self.font)
-
-		inputElement.pack(side=LEFT, padx=10, pady=10)
-
-		return inputElement
-
-	def cleanFieldForm(self):
-		for element in self.listElementThisForm.values():
-			element[-1].destroy()
-
 class Interface():
 	def __init__(self):
 		print ("PASTA ATUAL MAIN: " +os.getcwd())
@@ -162,7 +57,6 @@ class Interface():
 			self.errorReport.showAndSaveError(self.db.getErrorDb(), "Erro ao inicializar banco de dados")		
 
 	def defineVars(self):
-		self.frameOld = None
 		self.optionVar = IntVar()
 		self.nameFormVar = StringVar()
 		self.pathImageFormVar = StringVar()
@@ -175,7 +69,7 @@ class Interface():
 
 		self.menuOptionsFunctions = [self.activeOptionCreateForm, self.activeOptionGetApps]
 		
-		
+		self.frameOld = None
 		self.menuRightStateVar = False
 
 	def defineFontsVars(self):
@@ -234,8 +128,6 @@ class Interface():
 
 		self.tabItem = TabItem(master=self.tabFrameFieldForm, nameFormVar=self.nameFormVar, eventWhenAddElement=self.checkFormCompleted, eventWhenDelElement=self.checkFormCompleted)
 		self.tabItem.renderAbaItem()
-		self.listElementThisForm = self.tabItem.getElementsAdded()
-
 
 		#Cria opcoes especificas no meu direito para FieldForm
 		self.createMenuSideForFieldForm()
@@ -254,7 +146,7 @@ class Interface():
 		Label(self.tabFrameInfoForm, text="Descrição", font=self.fontMin).grid(row=2, column=0)
 		self.textWidget = Text(self.tabFrameInfoForm, pady=10, font=self.fontMin, width=50, height=3)
 		self.textWidget.grid(row=2, column=1, sticky=W+E+N+S)
-		self.descriptionFormVar = self.createVarByTextWidget(self.textWidget)
+		self.descriptionFormVar = createVarByTextWidget(self.textWidget)
 
 		self.imageWidget = Label(self.tabFrameInfoForm, padx=10, pady=10, background="lightcyan", anchor=N)
 		self.imageWidget.grid(row=1, column=2, rowspan=2, sticky=W+E+N+S, padx=10, pady=10)
@@ -267,25 +159,40 @@ class Interface():
 		self.buttonNext = Button(self.tabFrameInfoForm, state="disabled", font=self.fontMin, text="Prosseguir", command=self.actionNextTabFrameFieldForm)
 		self.buttonNext.grid(row=4, column=1, padx=20, pady=15)
 
+		self.setValuesTest()
+
+	def setValuesTest(self):
+		"Salva o app na db e pula para a proxima aba"
+		self.nameFormVar.set("Eventos Mensais")
+		self.textWidget.insert("0.0", "Eventos e palestrar de tecnologia que estão perto de ocorrer no ano de 2018.")
+		self.actionChoiseImageForm("images/iconsApps/video.png")#Define a imagem que representara o app
+		#self.cleanInfoApp()
 	
 	def checkInfoAppCompleted(self, a, b, c):#checa se todos os campos de informacoes do app foram preenchidas
-		if self.nameFormVar.get() and self.pathImageFormVar.get() <> "link da imagem":
+		
+		if self.nameFormVar.get() and self.pathImageFormVar.get() != "link da imagem":
+			print "BOTAO NEXT HABILITADO"
 			self.buttonNext.config(state="active")
-			self.tabItem.updateTitleFormVar()
+			try: self.tabItem.updateTitleFormVar()
+			except: pass
 
 		else:
+			print "BOTAO NEXT DESABILITADO"
 			self.activeDeactivateTabFrameFieldForm()
 			self.buttonNext.config(state="disabled")
 			self.buttonSaveApp.config(state="disabled")
 
 	def checkFormCompleted(self):
-		if self.listElementThisForm:
+		print "LISTA: ", self.tabItem.getElementsAdded()
+		if self.tabItem.getElementsAdded():
+			print "BOTAO SAVE HABILITADO"
 			self.buttonSaveApp.config(state="active")
 		else:
+			print "BOTAO SAVE DESABILITADO"
 			self.buttonSaveApp.config(state="disabled")
 
-	def renderElement(self, infoAppFrame, widget_tkinter):
-		"Renderiza os elementos na tela com configurações de variáveis"
+	def renderInputElement(self, infoAppFrame, widget_tkinter):
+		"Renderiza os inputs dos elementos na tela para input do usuario"
 		inputElementVar = None
 		if widget_tkinter == "entry":
 			inputElementVar = StringVar()
@@ -307,20 +214,24 @@ class Interface():
 		
 		elif widget_tkinter == "text":
 			inputElement = Text(infoAppFrame, width=40, height=4, font=self.font)
-			inputElementVar = self.createVarByTextWidget(inputElement)
+			inputElementVar = createVarByTextWidget(inputElement)
+
+		elif widget_tkinter == "option-box":
+			pass			
 
 		inputElement.pack(side=LEFT, padx=10, pady=10)
 
 		return (inputElement, inputElementVar)
 
-	def createVarByTextWidget(self, textWidget):
-		def funcSet(value):
-			textWidget.delete("0.0", END)
-			textWidget.insert("0.0", value)
-		return type("StringVar", (), {"set": staticmethod(funcSet), "get": staticmethod(lambda: textWidget.get("0.0", END))})
+	def actionChoiseImageForm(self, path_origin=None):
+		"Escolhe imagem atravez de acao ou atraves de chamada call"
+		if path_origin == "": 
+			self.imageWidget["image"] = None
+			self.imageWidget["background"] = "grey"
+			self.pathImageFormVar.set("")
 
-	def actionChoiseImageForm(self):
-		path_origin = tkFileDialog.askopenfilename(initialdir = "/",title = "Selecione o Arquivo", filetypes = (("Arquivos jpeg", "*.jpg"), ("Arquivos png", "*.png"),("Todos arquivos", "*.*")))
+		elif path_origin == None: path_origin = tkFileDialog.askopenfilename(initialdir = "/",title = "Selecione o Arquivo", filetypes = (("Arquivos jpeg", "*.jpg"), ("Arquivos png", "*.png"),("Todos arquivos", "*.*")))
+		
 		if path_origin:
 			file_name = os.path.basename(path_origin)
 			self.pathImageFormVar.set("images/iconsApps/"+file_name)
@@ -336,20 +247,17 @@ class Interface():
 			self.imageWidget["background"] = "SystemButtonFace"
 
 	def actionNextTabFrameFieldForm(self):
-		"Salva o app na db e pula para a proxima aba"
-		#self.nameFormVar.set("Eventos Mensais")
-		#self.textWidget.insert("0.0", "Eventos e palestrar de tecnologia que estão perto de ocorrer no ano de 2018.")
 		self.nextTabFrameFieldForm()
 
 	def cleanInfoApp(self):
 		self.nameFormVar.set("")
-		self.pathImageFormVar.set("")
-		self.descriptionFormVar.set("")	
+		self.descriptionFormVar.set("")
+		self.actionChoiseImageForm("")
 
 	def saveAll(self):
-		nameTableFormated = self.formatNameTable(self.nameFormVar.get())+str(randint(1, 1000000))
+		nameTableFormated = self.formatName(self.nameFormVar.get())+str(randint(1, 1000000))
 		appId = self.saveApp(nameTableFormated)#Salva as informacoes do App
-		self.saveFieldsForm(appId)#Salva as ordens dos elementos no formulario
+		self.saveFieldsForm(appId)#Salva a ordem dos elementos no formulario
 		self.saveTableForm(nameTableFormated)#Salva a tabela para inserir os futuros itens
 
 		self.cleanInfoApp()#Limpa todos os campos preenchimentos de Info App
@@ -358,7 +266,6 @@ class Interface():
 
 	def saveApp(self, nameTableFormated):
 		"Salva o app no banco de dados"
-		
 		self.db.saveRecordApp(
 			self.nameFormVar.get(), 
 			self.textWidget.get("0.0", END), 
@@ -368,22 +275,33 @@ class Interface():
 		return self.db.getIdOfLastRecordInApps()[0]
 
 	def saveFieldsForm(self, appId):
+		"Salva a ordem dos elementos no formulario"
 		#(id_element, nameElementVar, type_element, inputElement)
 		index_posicao = 0
-		indexTemps = list(self.listElementThisForm)
+		indexTemps = list(self.tabItem.getElementsAdded())
 		indexTemps.sort()
 
 		for indexTemp in indexTemps:
-			id_element, nameElementVar, type_element, _ = self.listElementThisForm.get(indexTemp)
+			element = self.tabItem.getElementsAdded().get(indexTemp)
+			#id_element, name_element_var, type_element, info_app_frame = self.tabItem.getElementsAdded().get(indexTemp)
 			#salvar em saveFieldApp ---> id_formulario, id_elemento, titulo, texto_ajuda, index_posicao
 			
-			self.db.saveFieldApp(appId, id_element, str(nameElementVar.get()), "", index_posicao)
+			self.db.saveFieldApp(
+				id_form=appId,
+				id_element=element.get("id_element"), 
+				title=element.get("name_element_var").get(), #.encode("utf-8")
+				text_help="", 
+				index_position=element.get("info_app_frame").idTemporaryElement, 
+				params=element.get("info_app_frame").params)
 			index_posicao += 1
 
 	def saveTableForm(self, nameTableFormated):
+		"Salva a tabela criada pelo usuario implicitamente"
 		try:
-			fields_types = map(lambda element: self.formatNameColumn(element[1].get())+\
-			" "+element[2], self.listElementThisForm.values())
+			fields_types = [
+			self.formatName(element.get("name_element_var").get())+" "+element.get("type_element") \
+				for element in self.tabItem.getElementsAdded().values()]
+
 			self.db.saveTableApp(nameTableFormated, fields_types)
 		except Exception as error:
 			self.errorReport.showAndSaveError(error.message, "Erro ocorreu durante salvamento da tabela")
@@ -409,30 +327,50 @@ class Interface():
 
 	def activeDeactivateTabFrameFieldForm(self): self.framesNotebook.hide(self.tabFrameFieldForm)
 
-	def formatNameColumn(self, name_field):
+	def formatName(self, name_field):
+		"Formata nomes de colunas e tabelas"
 		name_formated = "_".join(name_field.lower().split(" ")[0:2])
-		return name_formated
-
-	def formatNameTable(self, name_form):
-		name_formated = "_".join(name_form.lower().split(" ")[0:2])
 		return name_formated
 
 	def configWidgetsGetApps(self): # Configura todos os widgets que pertencem ao frame que mostra todos os apps e forms
 		self.frameGetApps = Frame(self.frameBody)
 
 		self.frameAbasGetApps = Notebook(self.frameGetApps)
-		self.frameAbasGetApps.pack(side=TOP, fill=BOTH)
+		self.frameAbasGetApps.pack(side=TOP, expand=True, fill=BOTH)
 
-		frameApp = Frame(self.frameAbasGetApps)
-		frameInfoApp = Frame(frameApp)
-		frameInfoApp.pack(side=TOP, fill=BOTH)
-		frameFieldsApp = Frame(frameApp)
-		frameFieldsApp.pack(side=TOP, fill=BOTH)
+		for idApp, nomeApp, descricao, pathImage in self.db.getAllInfoForms("id", "nome_formulario", "descricao", "caminho_imagem"):
+			frameApp = Frame(self.frameAbasGetApps)
 
-		for idApp, nomeApp, pathImage in self.db.getAllInfoForms("id", "nome_formulario", "caminho_imagem"):
-			image = renderPhoto(pathImage, (35, 35))
+			image = renderPhoto(pathImage, (30, 30))
 			self.frameAbasGetApps.add(frameApp, compound=LEFT, image=image, text=nomeApp, sticky=W+E+N+S)
-			break
+
+			headerFrame = Frame(frameApp)
+			headerFrame.pack(side=TOP)
+
+			buttonsAppFrame = Frame(headerFrame)
+			buttonsAppFrame.pack(side=RIGHT)
+
+			Button(buttonsAppFrame, text="Configurações").pack(side=TOP, padx=10, pady=5)
+			Button(buttonsAppFrame, text="Adicionar Item").pack(side=TOP, padx=10, pady=5)
+
+			infoAppFrame = LabelFrame(headerFrame, text="Informações do App")
+			infoAppFrame.pack(side=LEFT, fill=X, padx=10, pady=10, ipadx=10, ipady=10)
+
+			self.nameAppVar = StringVar()
+			self.aboutAppVar = StringVar()
+			Label(infoAppFrame, textvariable=self.nameAppVar, font=self.font, foreground="lightcoral").pack(side=TOP, expand=True, fill=BOTH)
+			Label(infoAppFrame, textvariable=self.aboutAppVar).pack(side=TOP, expand=True, fill=BOTH)
+			
+			self.nameAppVar.set(nomeApp)
+			self.aboutAppVar.set(descricao)
+
+			itemsFrame = Frame(frameApp, background="red")
+			itemsFrame.pack(side=TOP, expand=True, fill=BOTH)
+
+
+
+			#break
+
 
 	# def generateTabsApps(self):
 	# 	self.listTabsApps = []
