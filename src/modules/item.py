@@ -1,7 +1,7 @@
-# -*- coding: Latin-1 -*-
+# -*- coding: cp1252 -*-
 from Tkinter import *
 from utilities import createVarByTextWidget
-from modules.db import DatabaseGui
+from modules.db import Database
 
 class ItemWidget(Frame):
 	def __init__(self, master, fields_show):
@@ -85,65 +85,83 @@ class OptionWidget:
 	def getListVars(self):
 		return self._listVars
 
-
 class TabItem:
 	def __init__(self, master, nameFormVar, eventWhenAddElement=None, eventWhenDelElement=None):
+		"""
+		master				: Frame que contem a aba Item
+		nameFormVar			: Variável controladora do nome da aplicacao definida na aba InfoApp
+		eventWhenAddElement	: Evento que será chamado quando adicionar um elemento
+		eventWhenDelElement	: Evento que será chamado quando remover um elemento"""
+
 		self.master = master
+		self.nameFormVar = nameFormVar
 		self.eventWhenAddElement = eventWhenAddElement
 		self.eventWhenDelElement = eventWhenDelElement
-		self.nameFormVar = nameFormVar
+		
+		self.db = Database()#Cria instancia do banco de dados
+		self.defineVars()# Define as variaveis globais da classe
+		self.defineFonts()# Define as variaveis de fontes padroes da aplicacao
 
-		self.db = DatabaseGui()
+	def getElementsAdded(self):
+		"Retorna todos elementos adicionados pelo usuário"
+		return self.listElementThisForm
+
+	def defineVars(self):
+		self.listOptionWidgetClass = []
 		self.listElementThisForm = {}
 		self.idTemporaryElement = 0
 		self.titleFormVar = StringVar()
-		self.defineFontsVars()
 
-	def getElementsAdded(self):
-		return self.listElementThisForm
-
-	def defineFontsVars(self):
+	def defineFonts(self):
+		"Variaveis de fonte globais para estética padrão da aplicação"
 		self.font = ("Arial", 13)
 		self.fontMin = ("Arial", 10)
 		self.fontMax = ("Arial", 15)
-		self.listOptionWidgetClass = []
 
-	def renderAbaItem(self):
-		# -------------- tabFrameFieldForm -------------
-		
-		Label(self.master, textvariable=self.titleFormVar, font=self.font).pack(side=TOP)
-
-		frameBodyForm = Frame(self.master, background="lightcyan")
+	def createAba(self):
+		"Cria a aba Item para criacao de formulario"
+		frame = Frame(self.master)
+		Label(frame, textvariable=self.titleFormVar, font=self.font).pack(side=TOP)
+		# Frame que contem os frames de menu de tipos de elementos e de elementos escolhidos pelo usuario
+		frameBodyForm = Frame(frame, background="lightcyan")
 		frameBodyForm.pack(side=TOP, fill=BOTH, expand=True, padx=5)
-
-		frameMenuElementsForm = Frame(frameBodyForm)#Frame que contera todos os elementos existentes
+		#Frame que contem todos os tipos de elementos disponíveis no banco
+		frameMenuElementsForm = Frame(frameBodyForm)
 		frameMenuElementsForm.pack(side=LEFT, fill=Y, ipadx=5)
-		self.frameRenderElementsForm = Frame(frameBodyForm)#Frame que contera todos os elementos escolhidos pelo usuario
-		self.frameRenderElementsForm.pack(side=LEFT, fill=Y, ipadx=5, ipady=5)
+		#Frame que contem todos os elementos escolhidos pelo usuario
+		frameElementsForm = Frame(frameBodyForm)
+		frameElementsForm.pack(side=LEFT, fill=Y, ipadx=5, ipady=5)
 
 		Label(frameMenuElementsForm, text="Elementos", font=self.font).pack(side=TOP)
-		for element in self.db.getAllElemments(): #Mostra todos os elementos em forma de botoes para serem adicionados no formulário
-			function = lambda id_element=element[0], name_element=element[1], type_element=element[2], multline=element[3], widget_tkinter=element[5]:\
-			 self.actionAddElement(id_element, name_element, type_element, multline, widget_tkinter)
+		for id_element, name_element, type_element, multline, path_image, widget_tkinter in self.db.getAllElemments(): #Mostra todos os elementos em forma de botoes para serem adicionados no formulário
+			function = lambda \
+			id_element=id_element, \
+			name_element=name_element, \
+			type_element=type_element, \
+			multline=multline, \
+			widget_tkinter=widget_tkinter:\
+			 self.actionAddElement(frameElementsForm, id_element, name_element, type_element, multline, widget_tkinter)
 
 			Button(frameMenuElementsForm, width=15, height=2, \
-				text=element[1], command=function, repeatdelay=700, \
+				text=name_element, command=function, repeatdelay=700, \
 				borderwidth=3, activebackground="lightseagreen", \
 				background="darkcyan", cursor="sb_right_arrow").pack(side=TOP)
 		#return frameRenderElementsForm #Aba para renderização dos elementos
+		return frame
 
 	def updateTitleFormVar(self):
 		self.titleFormVar.set("Crie o formulário para seu App  ( "+self.nameFormVar.get()+" ) aqui!")
 		
-	def actionAddElement(self, id_element, name_element, type_element, multline, widget_tkinter): #Adiciona elemento para renderizacao com evento de botao
-		infoAppFrame = Frame(self.frameRenderElementsForm, background="powderblue")
+	def actionAddElement(self, master, id_element, name_element, type_element, multline, widget_tkinter): #Adiciona elemento para renderizacao com evento de botao
+		"Aciona quando adicionado algum elemento na interface por meio de algum evento"
+		infoAppFrame = Frame(master, background="powderblue")
 		infoAppFrame.pack(side=TOP, fill=X)
 		infoAppFrame.idTemporaryElement = self.idTemporaryElement
 
 		def removeElement():# Funcao para remover o elemento da interface
-			del self.listElementThisForm[infoAppFrame.idTemporaryElement]
+			del self.listElementThisForm[infoAppFrame.idTemporaryElement]# Deleta o item da lista de elementos adicionados do formulario
 			infoAppFrame.destroy()# Remove o frame da tela
-			self.eventWhenDelElement()# Deleta o item da lista de elementos adicionados do formulario
+			self.eventWhenDelElement()# Funcao que sera chamada apos remocao do elemento
 
 		Button(infoAppFrame, text="X", command=removeElement, font=("Arial", 6), takefocus=False)\
 		.pack(side=RIGHT, ipadx=2, padx=2)#Botao para remover o elemento
@@ -154,10 +172,10 @@ class TabItem:
 		
 		#Salva na lista os tipos de dados que serão inseridos no banco
 		self.listElementThisForm[self.idTemporaryElement] = {
-		"id_element": id_element, 
-		"name_element_var": nameElementVar, #Nome do elemento definido pelo usuario
-		"type_element": type_element, #tipo do elemento definido no banco
-		"info_app_frame": infoAppFrame} #Frame
+		"id_element": id_element, # Identificacao do elemento
+		"name_element_var": nameElementVar, # Nome do elemento definido pelo usuario
+		"type_element": type_element, # Tipo do elemento(SQL) definido dentro banco
+		"info_app_frame": infoAppFrame} # Frame
 
 		self.idTemporaryElement += 1
 		self.eventWhenAddElement()
@@ -173,29 +191,28 @@ class TabItem:
 		nameElement.select_range(0, END)
 		return nameElementVar
 
-	def renderInputSampleElement(self, infoAppFrame, widget_tkinter):
+	def renderInputSampleElement(self, master, widget_tkinter):
 		"Cria os inputs como amostra na interface"
 		params = False
-		if widget_tkinter == "entry": inputElement = Entry(infoAppFrame, takefocus=False, state=FLAT, state="disabled", width=40, font=self.font)
-		elif widget_tkinter == "text": inputElement = Text(infoAppFrame, takefocus=False, state=FLAT, state="disabled", width=40, height=4, font=self.font)
-		elif widget_tkinter == "spinbox": inputElement = Spinbox(infoAppFrame, takefocus=False, state=FLAT, state="disabled", width=7, font=self.font)
-		elif widget_tkinter == "entry-date": inputElement = Entry(infoAppFrame, takefocus=False, state=FLAT, state="disabled", width=10, font=self.font)
-		elif widget_tkinter == "entry-phone": inputElement = Entry(infoAppFrame, takefocus=False, state=FLAT, state="disabled", width=15, font=self.font)
+		if widget_tkinter == "entry": 			inputElement = Entry(master, state="disabled", relief=FLAT, width=40)
+		elif widget_tkinter == "text": 			inputElement = Text(master, state="disabled", relief=FLAT, width=40, height=4)
+		elif widget_tkinter == "spinbox": 		inputElement = Spinbox(master, state="disabled", relief=FLAT, width=7)
+		elif widget_tkinter == "entry-date": 	inputElement = Entry(master, state="disabled", relief=FLAT, width=10)
+		elif widget_tkinter == "entry-phone": 	inputElement = Entry(master, state="disabled", relief=FLAT, width=15)
 		elif widget_tkinter == "option-box":
-			ow = OptionWidget(infoAppFrame)
+			ow = OptionWidget(master)
 			self.listOptionWidgetClass.append(ow)
-			inputElement = Button(infoAppFrame, text="+", font=self.fontMax, \
+			inputElement = Button(master, text="+", font=self.fontMax, \
 				command=lambda:ow.addOption())
 			params = True
-			infoAppFrame.params = ow.getListVars()
+			master.params = ow.getListVars()
 
-		if not params: infoAppFrame.params = ""
+		if not params: master.params = ""
 
 		inputElement.pack(side=LEFT, padx=10, pady=5)
+		inputElement.config(takefocus=False, font=self.font)
 
 		return inputElement
-
-	
 
 	def cleanFieldForm(self):
 		for element in self.listElementThisForm.values():

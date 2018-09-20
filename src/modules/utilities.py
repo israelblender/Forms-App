@@ -46,3 +46,8 @@ def createVarByTextWidget(textWidget):
         textWidget.delete("0.0", "end")
         textWidget.insert("0.0", value)
     return type("StringVar", (), {"set": staticmethod(funcSet), "get": staticmethod(lambda: textWidget.get("0.0", "end"))})
+
+def formatName(name_field):
+    "Formata nomes de colunas e tabelas para catacteres minusculos"
+    name_formated = "_".join(name_field.lower().split(" ")[0:2])
+    return name_formated

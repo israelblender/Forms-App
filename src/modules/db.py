@@ -15,6 +15,7 @@ class Database(object):
 			self._instance = super(Database, self).__new__(self)
 		self._instance_n += 1
 		return self._instance
+		
 	def checkStatus(self):#Retorna o True caso o banco esteja conectado
 		return self.status
 
@@ -124,32 +125,24 @@ class Database(object):
 
 		self.db.commit()
 
-	def saveFieldApp(self, id_form, id_element, title, text_help, index_position, params):
+	def saveFieldApp(self, id_form, id_element, title, text_help, index_position):
 		query = u"""insert into sequencia_elementos_formulario
-		(id_formulario, id_elemento, titulo, texto_ajuda, index_posicao, parametros)
-		values(?, ?, ?, ?, ?, ?)
+		(id_formulario, id_elemento, titulo, texto_ajuda, index_posicao)
+		values(?, ?, ?, ?, ?)
 		"""
-		self.execute(query, (id_form, id_element, title, text_help, index_position, ",".join(params)))
+		self.execute(query, (id_form, id_element, title, text_help, index_position))
+		self.db.commit()
+
+	def saveOption(self, name_option):
+		query = u"""insert into opcoes(id_elemento_formulario, nome)
+		values((select id from sequencia_elementos_formulario 
+		order by id desc limit 1), ?)"""
+		self.execute(query, (name_option, ))
 		self.db.commit()
 
 	def saveTableApp(self, name_table, fields_types):
-		query = """
-			create table {}(id INTEGER PRIMARY KEY AUTOINCREMENT, {})
-		""".format(name_table, ", ".join(fields_types))
+		query = "create table {}(id INTEGER PRIMARY KEY AUTOINCREMENT, {})"\
+		.format(name_table, ", ".join(fields_types))
 
 		self.executeUser(query)
 		self.dbUser.commit()
-
-class DatabaseGui(Database):
-	"""Classe destinada a avisar com interface grafica caso ocorra erro na conexao"""
-	def __new__(cls):
-		if not hasattr(cls, "_instance"):
-			cls._instance = super(DatabaseGui, cls).__new__(cls)
-			cls.instance_n = 0
-
-		cls.instance_n += 1
-		return cls._instance
-
-	def __init__(self):
-		if self.instance_n == 1:
-			Database.__init__(self)
