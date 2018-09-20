@@ -148,17 +148,11 @@ class TabItem:
 		Button(infoAppFrame, text="X", command=removeElement, font=("Arial", 6), takefocus=False)\
 		.pack(side=RIGHT, ipadx=2, padx=2)#Botao para remover o elemento
 
-		nameElementVar = StringVar()
-		nameElement = Entry(infoAppFrame, width=18, justify=CENTER, relief=FLAT, \
-			textvariable=nameElementVar, font=("Agency FB", 14))
-		nameElement.pack(side=LEFT, padx=10, fill=X)
-		nameElementVar.set(name_element)
-		nameElement.focus_force()
-		nameElement.select_range(0, END)
+		nameElementVar = self.renderLabelSampleElement(infoAppFrame, name_element)#Cria o Label do elemento e retorna a variável controladora de saída
 
-		self.renderSampleInputElement(infoAppFrame, widget_tkinter)#Renderiza os inputs como amostra na interface
+		self.renderInputSampleElement(infoAppFrame, widget_tkinter)#Cria os inputs como amostra na interface
 		
-		#Salva na lista o id do elemento,nome da variavel controladora e o tipo de dado que sera inserido no banco
+		#Salva na lista os tipos de dados que serão inseridos no banco
 		self.listElementThisForm[self.idTemporaryElement] = {
 		"id_element": id_element, 
 		"name_element_var": nameElementVar, #Nome do elemento definido pelo usuario
@@ -168,21 +162,34 @@ class TabItem:
 		self.idTemporaryElement += 1
 		self.eventWhenAddElement()
 
-	def renderSampleInputElement(self, infoAppFrame, widget_tkinter):
-		"Renderiza os inputs como amostra na interface"
-		params = None
-		if widget_tkinter == "entry": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=40, font=self.font)
-		elif widget_tkinter == "text": inputElement = Text(infoAppFrame, takefocus=False, state="disabled", width=40, height=4, font=self.font)
-		elif widget_tkinter == "spinbox": inputElement = Spinbox(infoAppFrame, takefocus=False, state="disabled", width=7, font=self.font)
-		elif widget_tkinter == "entry-date": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=10, font=self.font)
-		elif widget_tkinter == "entry-phone": inputElement = Entry(infoAppFrame, takefocus=False, state="disabled", width=15, font=self.font)
+	def renderLabelSampleElement(self, master, name_element):
+		"Cria o Label do elemento e retorna a variável controladora de saída"
+		nameElementVar = StringVar()
+		nameElement = Entry(master, width=18, justify=CENTER, \
+			textvariable=nameElementVar, font=("Agency FB", 14))
+		nameElement.pack(side=LEFT, padx=10, fill=X)
+		nameElementVar.set(name_element)
+		nameElement.focus_force()
+		nameElement.select_range(0, END)
+		return nameElementVar
+
+	def renderInputSampleElement(self, infoAppFrame, widget_tkinter):
+		"Cria os inputs como amostra na interface"
+		params = False
+		if widget_tkinter == "entry": inputElement = Entry(infoAppFrame, takefocus=False, state=FLAT, state="disabled", width=40, font=self.font)
+		elif widget_tkinter == "text": inputElement = Text(infoAppFrame, takefocus=False, state=FLAT, state="disabled", width=40, height=4, font=self.font)
+		elif widget_tkinter == "spinbox": inputElement = Spinbox(infoAppFrame, takefocus=False, state=FLAT, state="disabled", width=7, font=self.font)
+		elif widget_tkinter == "entry-date": inputElement = Entry(infoAppFrame, takefocus=False, state=FLAT, state="disabled", width=10, font=self.font)
+		elif widget_tkinter == "entry-phone": inputElement = Entry(infoAppFrame, takefocus=False, state=FLAT, state="disabled", width=15, font=self.font)
 		elif widget_tkinter == "option-box":
 			ow = OptionWidget(infoAppFrame)
 			self.listOptionWidgetClass.append(ow)
 			inputElement = Button(infoAppFrame, text="+", font=self.fontMax, \
 				command=lambda:ow.addOption())
-		if params: infoAppFrame.params = ow.getListVars()
-		else: infoAppFrame.params = ""
+			params = True
+			infoAppFrame.params = ow.getListVars()
+
+		if not params: infoAppFrame.params = ""
 
 		inputElement.pack(side=LEFT, padx=10, pady=5)
 

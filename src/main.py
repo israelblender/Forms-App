@@ -38,28 +38,52 @@ class Forms:
 
 class Interface():
 	def __init__(self):
-		print ("PASTA ATUAL MAIN: " +os.getcwd())
+		print ("PASTA ATUAL PRINCIPAL: " +os.getcwd())
 		self.errorReport = ErrorReport("logs_errors/error_db.log")
 		self.db = DatabaseGui()
 		if self.db.checkStatus():
 			self.defineFontsVars()
-			self.configWindow("1.0.0")
+			self.window = self.createWindow("1.0.0")
+
 			self.defineVars()
-			self.configWidgetsMenuOptions()
-			self.configWidgetsCreateForm()
-			self.configWidgetsGetApps()
+			self.configTitleLogo(self.window)
 
-			self.setWidgets()
+			frameBody = Frame(self.window, background="paleturquoise")
+			frameBody.pack(side=TOP, expand=True, fill=BOTH)
+	
+			self.createWidgetsMenuOptions	(frameBody)
+			self.createMenuRight			(frameBody)
+			self.createWidgetsCreateForm	(frameBody)
+			self.createWidgetsGetApps		(frameBody)
 
-			############################ FUNCAO TEMPORARIA APENAS PARA DESENVOLVIMENTO
+			#self.checkInfoAppCompleted()#Checa se as informações da aba InfoApp estao todas preenchidas
+			self.setDefaultValuesWidgets()#Preeche com valores padroes da aplicacao
+
+			############################ CHAMADAS TEMPORARIAS APENAS PARA DESENVOLVIMENTO
+			self.setPersonValuesWidgets()#Simula preenchimento de valores personalizados
 			self.nextTabFrameFieldForm()
 		else:
 			self.errorReport.showAndSaveError(self.db.getErrorDb(), "Erro ao inicializar banco de dados")		
+
+	def setPersonValuesWidgets(self):
+		"FUNCAO DESENVOLVEDOR: Preenche com valores personalizados"
+		self.nameFormVar.set("Eventos Mensais")
+		self.textWidget.insert("0.0", "Eventos e palestrar de tecnologia que estão perto de ocorrer no ano de 2018.")
+		self.actionChoiseImageForm("images/iconsApps/video.png")#Define a imagem que representara o app
+		self.rb1.invoke()
+		#self.cleanInfoApp()
+
+	def setDefaultValuesWidgets(self):
+		"Preeche com valores padroes da aplicacao"
+		self.optionVar.set(0)
+		self.pathImageFormVar.set("link da imagem")
+		self.rb1.invoke()#Aciona o RadioButton CreateForm para renderizar os elementos na frameCreateForm
 
 	def defineVars(self):
 		self.optionVar = IntVar()
 		self.nameFormVar = StringVar()
 		self.pathImageFormVar = StringVar()
+		self.optionsExist = False# Variavel usada na condicional para salvar no banco caso existam
 
 		self.validateDateReg = self.window.register(validateDate)
 		self.validatePhoneReg = self.window.register(validatePhone)
@@ -77,30 +101,26 @@ class Interface():
 		self.fontMin = ("Arial", 10)
 		self.fontMax = ("Arial", 15)
 
-	def setWidgets(self):
-		self.optionVar.set(0)
-		self.pathImageFormVar.set("link da imagem")
-		self.rb1.invoke()#Aciona o RadioButton CreateForm para renderizar os elementos na frameCreateForm
+	def createWindow(self, version):
+		window = Tk()
+		window.title("Forms App {}".format(version))
+		window.geometry("900x500+150+100")
+		window.iconbitmap( "images/imagesFormsApp/imageApp.ico")
+		return window
 
-	def configWindow(self, version):
-		self.window = Tk()
-		self.window.title("Forms App {}".format(version))
-		self.window.geometry("900x500+150+100")
-		self.window.iconbitmap( "images/imagesFormsApp/imageApp.ico")
-
+	def configTitleLogo(self, master):
 		title = "Crie seu App, formulários, realize estatísticas, \nedite e estude seus dados com o Forms App"
 		image = renderPhoto("images/imagesFormsApp/imageApp.png", (60, 60))
-		Label(self.window, font=("Arial Rounded MT Bold", 15), background="thistle", foreground="chocolate", \
+		Label(master, font=("Arial Rounded MT Bold", 15), background="thistle", foreground="chocolate", \
 			text=title, padx=10, pady=10, image=image, compound=RIGHT)\
 		.pack(side=TOP, fill="x", ipady=5)
-		self.frameBody = Frame(self.window, background="paleturquoise")
-		self.frameBody.pack(side=TOP, expand=True, fill=BOTH)
 
-		self.menuRight = Frame(self.frameBody, background="paleturquoise", width=150)
+	def createMenuRight(self, master):
+		self.menuRight = Frame(master, background="paleturquoise", width=150)
 		self.menuRight.pack(side=RIGHT, fill=Y)
 		
-	def configWidgetsMenuOptions(self):
-		frameOptions = Frame(self.frameBody, background="paleturquoise")
+	def createWidgetsMenuOptions(self, master):
+		frameOptions = Frame(master, background="paleturquoise")
 		frameOptions.pack(side=LEFT, fill=Y, padx=5, pady=5)
 
 		self.rb1 = Radiobutton(frameOptions, font=self.font, text="Novo App", variable=self.optionVar,
@@ -110,8 +130,8 @@ class Interface():
 		value=1, indicatoron=0, width=15, height=2, command=self.actionOptions)
 		self.rb2.grid(row=2, column=0)
 
-	def configWidgetsCreateForm(self):
-		self.frameCreateForm = Frame(self.frameBody)
+	def createWidgetsCreateForm(self, master):
+		self.frameCreateForm = Frame(master)
 
 		self.framesNotebook = Notebook(self.frameCreateForm)
 		self.framesNotebook.pack(expand=True, fill=BOTH)
@@ -158,38 +178,21 @@ class Interface():
 
 		self.buttonNext = Button(self.tabFrameInfoForm, state="disabled", font=self.fontMin, text="Prosseguir", command=self.actionNextTabFrameFieldForm)
 		self.buttonNext.grid(row=4, column=1, padx=20, pady=15)
-
-		self.setValuesTest()
-
-	def setValuesTest(self):
-		"Salva o app na db e pula para a proxima aba"
-		self.nameFormVar.set("Eventos Mensais")
-		self.textWidget.insert("0.0", "Eventos e palestrar de tecnologia que estão perto de ocorrer no ano de 2018.")
-		self.actionChoiseImageForm("images/iconsApps/video.png")#Define a imagem que representara o app
-		#self.cleanInfoApp()
 	
-	def checkInfoAppCompleted(self, a, b, c):#checa se todos os campos de informacoes do app foram preenchidas
+	def checkInfoAppCompleted(self, a=None, b=None, c=None):#checa se todos os campos de informacoes do app foram preenchidas
 		
 		if self.nameFormVar.get() and self.pathImageFormVar.get() != "link da imagem":
-			print "BOTAO NEXT HABILITADO"
 			self.buttonNext.config(state="active")
 			try: self.tabItem.updateTitleFormVar()
 			except: pass
-
 		else:
-			print "BOTAO NEXT DESABILITADO"
 			self.activeDeactivateTabFrameFieldForm()
 			self.buttonNext.config(state="disabled")
 			self.buttonSaveApp.config(state="disabled")
 
 	def checkFormCompleted(self):
-		print "LISTA: ", self.tabItem.getElementsAdded()
-		if self.tabItem.getElementsAdded():
-			print "BOTAO SAVE HABILITADO"
-			self.buttonSaveApp.config(state="active")
-		else:
-			print "BOTAO SAVE DESABILITADO"
-			self.buttonSaveApp.config(state="disabled")
+		if self.tabItem.getElementsAdded(): self.buttonSaveApp.config(state="active")
+		else: self.buttonSaveApp.config(state="disabled")
 
 	def renderInputElement(self, infoAppFrame, widget_tkinter):
 		"Renderiza os inputs dos elementos na tela para input do usuario"
@@ -252,20 +255,20 @@ class Interface():
 	def cleanInfoApp(self):
 		self.nameFormVar.set("")
 		self.descriptionFormVar.set("")
-		self.actionChoiseImageForm("")
+		#self.actionChoiseImageForm("")
 
 	def saveAll(self):
 		nameTableFormated = self.formatName(self.nameFormVar.get())+str(randint(1, 1000000))
-		appId = self.saveApp(nameTableFormated)#Salva as informacoes do App
-		self.saveFieldsForm(appId)#Salva a ordem dos elementos no formulario
-		self.saveTableForm(nameTableFormated)#Salva a tabela para inserir os futuros itens
+		#appId = self.saveApp(nameTableFormated)#Salva as informacoes do App
+		self.saveFieldsForm(2154)#Salva a ordem dos elementos no formulario
+		#self.saveTableForm(nameTableFormated)#Salva a tabela para inserir os futuros itens
 
 		self.cleanInfoApp()#Limpa todos os campos preenchimentos de Info App
 		self.tabItem.cleanFieldForm()#Remove todos os Itens adicionados na criacao do formulario
 		self.activeDeactivateTabFrameFieldForm()#Torna a aba Item invisivel novamente
 
 	def saveApp(self, nameTableFormated):
-		"Salva o app no banco de dados"
+		"Salva as informacoes do app no banco de dados"
 		self.db.saveRecordApp(
 			self.nameFormVar.get(), 
 			self.textWidget.get("0.0", END), 
@@ -285,14 +288,18 @@ class Interface():
 			element = self.tabItem.getElementsAdded().get(indexTemp)
 			#id_element, name_element_var, type_element, info_app_frame = self.tabItem.getElementsAdded().get(indexTemp)
 			#salvar em saveFieldApp ---> id_formulario, id_elemento, titulo, texto_ajuda, index_posicao
-			
+			print "PARAMS: ", element.get("info_app_frame").params
 			self.db.saveFieldApp(
 				id_form=appId,
 				id_element=element.get("id_element"), 
 				title=element.get("name_element_var").get(), #.encode("utf-8")
 				text_help="", 
 				index_position=element.get("info_app_frame").idTemporaryElement, 
-				params=element.get("info_app_frame").params)
+				params=[param.get() for param in element.get("info_app_frame").params])
+
+			if self.optionsExist:
+				self.db.saveOptionsElements()
+
 			index_posicao += 1
 
 	def saveTableForm(self, nameTableFormated):
@@ -332,8 +339,8 @@ class Interface():
 		name_formated = "_".join(name_field.lower().split(" ")[0:2])
 		return name_formated
 
-	def configWidgetsGetApps(self): # Configura todos os widgets que pertencem ao frame que mostra todos os apps e forms
-		self.frameGetApps = Frame(self.frameBody)
+	def createWidgetsGetApps(self, frame): # Configura todos os widgets que pertencem ao frame que mostra todos os apps e forms
+		self.frameGetApps = Frame(frame)
 
 		self.frameAbasGetApps = Notebook(self.frameGetApps)
 		self.frameAbasGetApps.pack(side=TOP, expand=True, fill=BOTH)
