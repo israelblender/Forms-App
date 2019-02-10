@@ -1,4 +1,4 @@
-# -*- coding: Latin-1 -*-
+# -*- coding: utf-8 -*-
 
 #Autor: Israel Gomes
 #Data: 26/08/2018

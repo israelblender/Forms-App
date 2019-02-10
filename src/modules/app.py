@@ -1,7 +1,9 @@
-# -*- coding: cp1252 -*-
+# -*- coding: utf-8 -*-
 from Tkinter import *
-from utilities import savePhoto, renderPhoto, createVarByTextWidget
+import Tkconstants, tkFileDialog
 
+from ttk import Button as ttkButton, Style as ttkStyle
+from utilities import savePhoto, renderPhoto, createVarByTextWidget
 from os import path
 
 class TabInfoApp:
@@ -32,28 +34,45 @@ class TabInfoApp:
 		"Cria a aba InfoApp"
 		frame = Frame(self.master)
 		Label(frame, text="Crie seu App aqui", font=self.font)\
-		.grid(row=0, column=0, columnspan=5)
+		.pack(side=TOP, expand=False, fill=X)#.grid(row=0, column=0, columnspan=5)
 
-		Label(frame, text="Nome", font=self.fontMin).grid(row=1, column=0)
-		inputName = Entry(frame, font=self.fontMin, textvariable=self.nameFormVar)
-		inputName.grid(row=1, column=1, pady=10, sticky=W+E+N+S)
+		frameLeft = Frame(frame)
+		frameLeft.pack(side=LEFT, expand=True, fill=X)
+		frameRight = Frame(frame)
+		frameRight.pack(side=LEFT, expand=True, fill=X)
+
+		frameName = Frame(frameLeft)
+		frameName.pack(side=TOP, expand=True, fill=X)
+		frameDescription = Frame(frameLeft)
+		frameDescription.pack(side=TOP, expand=True, fill=X)
+
+
+		Label(frameName, text="Nome", width=15, font=self.fontMin, justify=LEFT).pack(side=LEFT, padx=10)#.grid(row=1, column=0)
+		inputName = Entry(frameName, font=self.fontMin, textvariable=self.nameFormVar)
+		inputName.pack(side=LEFT, expand=True, fill=X)#grid(row=1, column=1, pady=10, sticky=W+E+N+S)
 		#inputName.bind("<KeyPress>", self.checkAbaInfoAppCompleted)
 
-		Label(frame, text="Descrição", font=self.fontMin).grid(row=2, column=0)
-		textWidget = Text(frame, pady=10, font=self.fontMin, width=50, height=3)
-		textWidget.grid(row=2, column=1, sticky=W+E+N+S)
+		Label(frameDescription, text="Descrição", width=15, font=self.fontMin, justify=LEFT).pack(side=LEFT, padx=10)#.grid(row=2, column=0)
+		#frameinputDescription = Frame(frameDescription)
+		#frameinputDescription.pack(side=LEFT)
+		textWidget = Text(frameDescription, pady=10, font=self.fontMin, width=50, height=3)
+		textWidget.pack(expand=True, fill='both')#.grid(row=2, column=1, sticky=W+E+N+S)
 		self.descriptionFormVar = createVarByTextWidget(textWidget)
+		#Descrição da imagem depois do usuario escolher
+		Label(frameDescription, padx=10, pady=10, background="lightcyan", font=self.fontMin, textvariable=self.pathImageFormVar)\
+		#.pack(side=TOP)#.grid(row=3, column=1, sticky=W+E+N+S)
 
-		self.imageWidget = Label(frame, padx=10, pady=10, background="lightcyan", anchor=N)
-		self.imageWidget.grid(row=1, column=2, rowspan=2, sticky=W+E+N+S, padx=10, pady=10)
+		self.imageWidget = Label(frameRight, padx=10, pady=10, background="lightcyan", anchor=N)
+		self.imageWidget.pack(side=TOP)#.grid(row=1, column=2, rowspan=2, sticky=W+E+N+S, padx=10, pady=10)
+		
+		s = ttkStyle()
+		s.configure('selecionarImagem.TButton', font=('Helvetica', 8))
 
-		Label(frame, padx=10, pady=10, background="lightcyan", font=self.fontMin, textvariable=self.pathImageFormVar)\
-		.grid(row=3, column=1, sticky=W+E+N+S)
-		Button(frame, font=self.fontMin, text="Procurar Imagem", command=self.actionChoiseImageInfoApp)\
-		.grid(row=3, column=2, padx=10, pady=10)
+		ttkButton(frameRight, text="Selecionar Imagem", style="selecionarImagem.TButton", command=self.actionChoiseImageInfoApp)\
+		.pack(side=TOP)#.grid(row=3, column=2, padx=10, pady=10, ipadx=10, ipady=3)
 
-		self.buttonNext = Button(frame, state="disabled", font=self.fontMin, text="Prosseguir")
-		self.buttonNext.grid(row=4, column=1, padx=20, pady=15)
+		#self.buttonNext = Button(frame, state="disabled", font=self.fontMin, text="Prosseguir")
+		#self.buttonNext.grid(row=4, column=1, padx=20, pady=15)
 		return frame
 
 	def setPersonValuesWidgets(self):

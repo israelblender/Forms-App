@@ -4,17 +4,16 @@
 #Data: 26/08/2018
 from modules.db import Database
 from modules.utilities import renderPhoto, createVarByTextWidget, formatName
-from modules.item import TabItem, ItemWidget
+from modules.item import TabItem
 from modules.app import TabInfoApp
+from modules.items import ItemWidget
 from modules.validate import validateDate, validatePhone
-#from tkMessageBox import showwarning
-from ttk import Notebook
-from Tkinter import *
-import Tkinter, Tkconstants, tkFileDialog
-from random import randint
-
-from os import getcwd
 from modules.report import ErrorReport
+
+from random import randint
+from os import getcwd
+from ttk import Notebook, Button as ttkButton, Style as ttkStyle
+from Tkinter import *
 
 class Elements:
 	def __init__(self):
@@ -107,11 +106,14 @@ class Interface():
 		frameOptions = Frame(master, background="paleturquoise")
 		frameOptions.pack(side=LEFT, fill=Y, padx=5, pady=5)
 
-		self.rb1 = Radiobutton(frameOptions, font=self.font, text="Novo App", variable=self.optionVar,
-		value=0, indicatoron=0, width=15, height=2, command=self.actionOptions)
+		self.rb1 = Radiobutton(frameOptions, font=self.font, text="Novo App", 
+		variable=self.optionVar, value=0, indicatoron=0, width=15, height=2,
+		activebackground="mediumaquamarine", background="cadetblue", command=self.actionOptions)
+		
 		self.rb1.grid(row=1, column=0)
-		self.rb2 = Radiobutton(frameOptions, font=self.font, text="Todos", variable=self.optionVar,
-		value=1, indicatoron=0, width=15, height=2, command=self.actionOptions)
+		self.rb2 = Radiobutton(frameOptions, font=self.font, text="Todos", 
+		variable=self.optionVar,value=1, indicatoron=0, width=15, height=2, 
+		activebackground="mediumaquamarine", background="cadetblue", command=self.actionOptions)
 		self.rb2.grid(row=2, column=0)
 
 	def createWidgetsNewApp(self, master):
@@ -122,14 +124,20 @@ class Interface():
 
 		self.tabInfoApp = TabInfoApp(master=self.framesNotebook, eventWhenChangeValue=self.checkAbaInfoAppCompleted)
 		tabFrameInfoApp = self.tabInfoApp.createAba()
-		self.tabInfoApp.buttonNext.config(command=self.nextTabFrameItem)
+		#self.tabInfoApp.buttonNext.config(command=self.nextTabFrameItem)
 
 		self.tabItem = TabItem(master=self.framesNotebook, nameFormVar=self.tabInfoApp.nameFormVar, eventWhenAddElement=self.checkAbaItemCompleted, eventWhenDelElement=self.checkAbaItemCompleted)
 		self.tabFrameItem = self.tabItem.createAba()
 
 		self.framesNotebook.add(tabFrameInfoApp, compound=LEFT, image=renderPhoto("images\\imagesFormsApp\\app.png", (40, 40)), sticky=W+E+N+S, text="Info App", padding='0.1i')
 		self.framesNotebook.add(self.tabFrameItem, compound=LEFT, image=renderPhoto("images\\imagesFormsApp\\document.png", (40, 40)), sticky=W+E+N+S, text="Item", padding='0.1i')
-		self.framesNotebook.hide(self.tabFrameItem)	
+		self.framesNotebook.hide(self.tabFrameItem)
+
+		s = ttkStyle()
+		s.configure('buttonNext.TButton', font=('Helvetica', 12))
+
+		self.buttonNext = ttkButton(tabFrameInfoApp, text="Prosseguir >>", style='buttonNext.TButton', command=self.nextTabFrameItem, state="disabled")
+		#self.buttonNext.pack(side=TOP)#.grid(row=4, column=1, padx=20, pady=15, ipadx=20, ipady=10)
 
 		#Cria opcoes especificas no menu direito para FieldForm
 		self.createMenuSideForItem()
@@ -138,12 +146,12 @@ class Interface():
 		"Verifica se todos os inputs da aba InfoApp foram preenchidos"
 
 		if self.tabInfoApp.checkAbaCompleted():
-			self.tabInfoApp.buttonNext.config(state="active")
+			self.buttonNext.config(state="active")
 			try: self.tabItem.updateTitleFormVar()
 			except: pass
 		else:
 			self.activeDeactivateTabFrameItem()
-			self.tabInfoApp.buttonNext.config(state="disabled")
+			self.buttonNext.config(state="disabled")
 			self.buttonSaveApp.config(state="disabled")
 
 	def checkAbaItemCompleted(self):
@@ -206,7 +214,7 @@ class Interface():
 	def createMenuSideForItem(self):
 		"Cria menu a direita para a aba item"
 		if not self.menuRightStateVar:
-			self.menuRight["background"] = "red"
+			#self.menuRight["background"] = "red"
 			self.menuRightApp = Frame(self.menuRight)
 			self.menuRightApp.pack(side=TOP, padx=10, pady=10)
 

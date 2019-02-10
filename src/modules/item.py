@@ -1,86 +1,33 @@
-# -*- coding: cp1252 -*-
+# -*- coding: utf-8 -*-
 from Tkinter import *
 from utilities import createVarByTextWidget
 from modules.db import Database
 
-class ItemWidget(Frame):
-	def __init__(self, master, fields_show):
-		"VALORES ACEITOS PARA fields_show: entry, entry-date, entry-phone, spinbox, text, option "
-		self.fields_show = fields_show
-		super(frame, self).__init__(self, master)
-		self.createItem(master)
-		self.createAttrs()
-
-	def setValues():
-		pass
-
-	def createAttrs(self, attrs):
-		self.attrs = dict([{field_name: {
-			"field_show":field_show, 
-			"stringvar":StringVar(),
-			"index":index}}	for index, field_name, field_show in enumerate(attrs)])
-
-		print "ATTRS: ", self.attrs
-
-	def createItem(self, master):
-		frameItem = Frame(master)
-		frameItem.pack(padx=10, pady=10)
-
-		#for 
-		#self.createWidget()
-
-	def createWidget(self, master, type_widget, stringvar):
-		if type_widget == "title":
-			Label(master, textvariable=stringvar).pack(side=TOP)
-
-		elif type_widget == "text":
-			text = Text(master)
-			text.pack(side=TOP)
-			text.config(textvariable=createVarByTextWidget(text))#createVarByTextWidget adiciona metodo set e get de StringVar
-	
-	#def renderElement(self, infoAppFrame, widget_tkinter):
-		"Renderiza os titulos de elementos na tela com configurações de variáveis"
-		inputElementVar = None
-		if widget_tkinter == "entry":
-			inputElementVar = StringVar()
-			inputElement = Entry(infoAppFrame, width=40, textvariable=inputElementVar, font=self.font)
-		
-		elif widget_tkinter == "entry-date":
-			inputElementVar = StringVar()
-			inputElement = Entry(infoAppFrame, width=10, textvariable=inputElementVar, font=self.font)
-			inputElement.config(validate="key", validatecommand=(self.validadeDateReg, '%i','%P', '%S', '%s'))
-
-		elif widget_tkinter == "entry-phone":
-			inputElementVar = StringVar()
-			inputElement = Entry(infoAppFrame, width=15, textvariable=inputElementVar, font=self.font)
-			inputElement.config(validate="key", validatecommand=(self.validadePhoneReg, '%i','%P', '%S', '%s'))
-
-                elif widget_tkinter == "spinbox":
-			inputElementVar = StringVar()
-			inputElement = Spinbox(infoAppFrame, width=5, textvariable=inputElementVar, font=self.font)
-		
-		elif widget_tkinter == "text":
-			inputElement = Text(infoAppFrame, width=40, height=4, font=self.font)
-			inputElementVar = createVarByTextWidget(inputElement)
-
-		elif widget_tkinter == "option":
-			pass
-
-		inputElement.pack(side=LEFT, padx=10, pady=10)
 
 class OptionWidget:
 	def __init__(self, master):
 		self.master = master
+
 		self._listVars = []
 
-	def addOption(self):
+	def addOption(self, event=None):
 		inputElementVar = StringVar()
-		frameOption = Frame(self.master, width=15,\
-			height=2, relief=RAISED, border=3)
-		frameOption.pack(side=LEFT, padx=10)
-		Entry(frameOption, textvariable=inputElementVar, relief=FLAT, 
-			width=15, justify=CENTER).pack(padx=5, pady=3)
+		frameOption = Frame(self.master, width=15, height=2, relief=RAISED, border=2)
+		frameOption.pack(side=TOP, padx=10, pady=5)
+		input = Entry(frameOption, textvariable=inputElementVar, relief=FLAT, \
+			width=15, justify=CENTER)
+		input.pack(side=LEFT, padx=5, pady=3)
+		input.focus_force()
+		input.bind("<Return>", self.addOption)
+
+		buttonDestroy = Button(frameOption, font=("Arial", 5), text="X", command=lambda frame_option=frameOption, element_var=inputElementVar: self.removeOption(frame_option, element_var), takefocus=False)\
+		.pack(side=RIGHT, ipadx=0, padx=0)
+
 		self._listVars.append(inputElementVar)
+
+	def removeOption(self, element, elementVar):
+		element.destroy()
+		self._listVars.remove(elementVar)
 
 	def getListVars(self):
 		return self._listVars
@@ -125,15 +72,23 @@ class TabItem:
 		# Frame que contem os frames de menu de tipos de elementos e de elementos escolhidos pelo usuario
 		frameBodyForm = Frame(frame, background="lightcyan")
 		frameBodyForm.pack(side=TOP, fill=BOTH, expand=True, padx=5)
+
+		self.generateMenuElements(frameBodyForm)
+		return frame
+
+	def generateMenuElements(self, master):
+		"Mostra todos os elementos em forma de botoes para serem adicionados no formulário"
 		#Frame que contem todos os tipos de elementos disponíveis no banco
-		frameMenuElementsForm = Frame(frameBodyForm)
+		frameMenuElementsForm = Frame(master)
 		frameMenuElementsForm.pack(side=LEFT, fill=Y, ipadx=5)
+
+		Label(frameMenuElementsForm, text="Elementos", font=self.font).pack(side=TOP, pady=10)
+		
 		#Frame que contem todos os elementos escolhidos pelo usuario
-		frameElementsForm = Frame(frameBodyForm)
+		frameElementsForm = Frame(master)
 		frameElementsForm.pack(side=LEFT, fill=Y, ipadx=5, ipady=5)
 
-		Label(frameMenuElementsForm, text="Elementos", font=self.font).pack(side=TOP)
-		for id_element, name_element, type_element, multline, path_image, widget_tkinter in self.db.getAllElemments(): #Mostra todos os elementos em forma de botoes para serem adicionados no formulário
+		for id_element, name_element, type_element, multline, path_image, widget_tkinter in self.db.getAllElemments():
 			function = lambda \
 			id_element=id_element, \
 			name_element=name_element, \
@@ -144,10 +99,8 @@ class TabItem:
 
 			Button(frameMenuElementsForm, width=15, height=2, \
 				text=name_element, command=function, repeatdelay=700, \
-				borderwidth=3, activebackground="lightseagreen", \
-				background="darkcyan", cursor="sb_right_arrow").pack(side=TOP)
-		#return frameRenderElementsForm #Aba para renderização dos elementos
-		return frame
+				borderwidth=3, activebackground="mediumaquamarine", \
+				background="cadetblue", cursor="sb_right_arrow").pack(side=TOP)
 
 	def updateTitleFormVar(self):
 		self.titleFormVar.set("Crie o formulário para seu App  ( "+self.nameFormVar.get()+" ) aqui!")
@@ -194,11 +147,28 @@ class TabItem:
 	def renderInputSampleElement(self, master, widget_tkinter):
 		"Cria os inputs como amostra na interface"
 		params = False
-		if widget_tkinter == "entry": 			inputElement = Entry(master, state="disabled", relief=FLAT, width=40)
-		elif widget_tkinter == "text": 			inputElement = Text(master, state="disabled", relief=FLAT, width=40, height=4)
-		elif widget_tkinter == "spinbox": 		inputElement = Spinbox(master, state="disabled", relief=FLAT, width=7)
-		elif widget_tkinter == "entry-date": 	inputElement = Entry(master, state="disabled", relief=FLAT, width=10)
-		elif widget_tkinter == "entry-phone": 	inputElement = Entry(master, state="disabled", relief=FLAT, width=15)
+		
+		if widget_tkinter == "entry":
+			inputElement = Entry(master, relief=FLAT, width=40)
+			inputElement.insert(0, "Texto de uma linha")
+			inputElement.config(state="disabled")
+		elif widget_tkinter == "text":
+			inputElement = Text(master, relief=FLAT, width=40, height=4)
+			inputElement.insert("0.0", "Texto multi-linha")
+			inputElement.config(state="disabled")
+		elif widget_tkinter == "spinbox":
+
+			inputElement = Spinbox(master, relief=FLAT, width=7)
+			inputElement.insert(0, "0")
+			inputElement.config(state="disabled")
+		elif widget_tkinter == "entry-date":
+			inputElement = Entry(master, relief=FLAT, width=10)
+			inputElement.insert(0, "     /    /  ")
+			inputElement.config(state="disabled")
+		elif widget_tkinter == "entry-phone":
+			inputElement = Entry(master, relief=FLAT, width=15)
+			inputElement.insert(0, "(99) 99999-9999")
+			inputElement.config(state="disabled")
 		elif widget_tkinter == "option-box":
 			ow = OptionWidget(master)
 			self.listOptionWidgetClass.append(ow)
